@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!-- IoC : 제어의 역전 
+     1. 객체 제작을 개발자가 직접하는게 아니라 Spring이 함 (new가 없어짐)
+     2. 객체(Object)는 빈(bean)이라고 부른다.
+     3. 빈(bean) 생성 방법
+        1) xml
+        2) java annotation 
+     4. scope 를 생략하면 singleton 으로 설정됨 (디폴트 값 : singleton)
+
+ -->
+
+<!-- Calculator calculator = new Calculator(); --> <!-- class : 객체타입, id : 객체이름 -->
+<bean class="com.gdu.prj01.xml01.Calculator"  
+      id="calculator"                         
+      scope="singleton"/>
+      
+ <!-- 
+  Computer computer1 = new Computer
+  computer1.setModel("gram");
+  computer2.setPrice(200);
+  computer1.setCalculator(new Calculator());
+  -->
+  <bean class="com.gdu.prj01.xml01.Computer"
+        id="computer1"
+        scope="singleton">
+    <property name="model" value="gram"/>
+    <property name="price" value="200"/>
+    <property name="calculator" ref="calculator"/> <!-- property가 setter 호출함, ref : bean을 쓸 때 사용 -->
+  </bean>    
+      
+  <!-- 
+    Computer computer2 = new Computer("macbook", 300, new Calculator());
+   -->
+   <bean class="com.gdu.prj01.xml01.Computer"
+         id="computer2"
+         scope="singleton">
+      <constructor-arg value="macbook"/> <!-- 생성자를 이용하여 만드는 방법 : constructor-arg는 매개변수의 순서대로 반드시 넣어야함!  -->
+      <constructor-arg value="300"/>
+      <constructor-arg ref="calculator"/>      
+   </bean>    
+      
+      
+</beans>
