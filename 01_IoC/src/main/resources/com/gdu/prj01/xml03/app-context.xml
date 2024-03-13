@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!-- 
+ 
+   myDao -> myService -> myService 
+   myService가 최종적으로 잘 동작하면 다른 bean 들도 오류 없이 동작된다는 것을 확인할 수 있음
+
+ -->
+
+
+  <bean class="com.gdu.prj01.xml03.MyConnection"
+        id="myConnection"
+        scope="singleton">
+        
+    <property name="driver" value="oracle.jdbc.OracleDriver"/>    
+    <property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"/>    
+    <property name="user" value="GD"/>    
+    <property name="password" value="1111"/>    
+    
+  </bean>
+  
+  <bean class="com.gdu.prj01.xml03.MyDao"
+        id="myDao"
+        scope="singleton">
+     <property name="myConnection" ref="myConnection"></property> <!-- 다른 <bean>을 값으로 가질 경우엔 ref 사용 --> 
+                                                                  <!-- 해당 property가 있으면 MyDao의 getConnection 메소드 필요가 없음 -->
+  </bean>
+
+  <bean class="com.gdu.prj01.xml03.MyService"
+        id="myService"
+        scope="singleton">
+    <property name="myDao" ref="myDao" />
+  </bean>
+  
+  <bean class="com.gdu.prj01.xml03.MyController"
+        id="myController"
+        scope="singleton">
+    <property name="myService" ref="myService"/>
+  </bean>
+  
+</beans>

@@ -6,14 +6,18 @@
 <!-- IoC : 제어의 역전 
      1. 객체 제작을 개발자가 직접하는게 아니라 Spring이 함 (new가 없어짐)
      2. 객체(Object)는 빈(bean)이라고 부른다.
-     3. 빈(bean) 생성 방법
+     3. 빈 <bean> 생성 방법
         1) xml
         2) java annotation 
      4. scope 를 생략하면 singleton 으로 설정됨 (디폴트 값 : singleton)
-
+     5. <bean> 기본 태그
+        1) class : 객체를 생성하기 위해 사용할 클래스 지정(위치 지정, 객체타입)
+        2) id : 객체를 가져오기 위해 사용하는 이름 지정
+        3) scope : 객체 범위 지정 
+            - singleton : 객체를 하나만 생성해서 사용
  -->
 
-<!-- Calculator calculator = new Calculator(); --> <!-- class : 객체타입, id : 객체이름 -->
+<!-- Calculator calculator = new Calculator(); -->
 <bean class="com.gdu.prj01.xml01.Calculator"  
       id="calculator"                         
       scope="singleton"/>
