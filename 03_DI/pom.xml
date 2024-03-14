@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+	
+  <modelVersion>4.0.0</modelVersion>
 	<groupId>com.gdu</groupId>
-	<artifactId>prj02</artifactId>
-	<name>02_spring_mvc</name>
+	<artifactId>prj03</artifactId>
+	<name>03_DI</name>
 	<packaging>war</packaging>
 	<version>1.0.0-BUILD-SNAPSHOT</version>
 	
@@ -156,7 +157,7 @@
     <build>
     
       <!-- deploy file (배포 파일) 이름 바꾸기 -->
-      <finalName>prj02</finalName>
+      <finalName>${artifactId}</finalName>
     
       <plugins>
           <plugin>

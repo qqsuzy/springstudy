@@ -28,11 +28,11 @@ public class MyController1 {
    *  2) 주요 매개변수
    *     (1) HttpServletRequest request
    *     (2) HttpServletResponse response
-   *     (3) HttpSession session
+   *     (3) HttpSession session                    =>  선언해서 사용하는 것은 spring 뿐 (본래 request.getSession로 가져옴)
    *     (4) 커맨드 객체 : 요청 파라미터를 받는 객체
    *     (5) 일반 변수   : 요청 파라미터를 받는 변수
    *     (6) Model mode  : forward 할 때 정보를 저장할 객체 (attribute)
-   *     (7) RedirectAttribute rttr : redirect 할 때 정보를 저장할 객체 (flash attribute) => forward만 가능한 정보 전달을 Spring 에서는 redirect도 가능함   
+   *     (7) RedirectAttributes rttr : redirect 할 때 정보를 저장할 객체 (flash attribute) => forward만 가능한 정보 전달을 Spring 에서는 redirect도 가능함   
    *    
    */
 

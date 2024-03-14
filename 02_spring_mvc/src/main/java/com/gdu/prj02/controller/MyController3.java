@@ -16,7 +16,7 @@ public class MyController3 {
      
   @RequestMapping(value="/article/detail1.do", method=RequestMethod.GET) // <a>태그 요청으로 GET 방식임
   public String detail1(HttpServletRequest request) {
-    int article_no = Integer.parseInt(request.getParameter("article_no")); // java 표준 servlet 
+    int article_no = Integer.parseInt(request.getParameter("article_no")); // java 표준 servlet 방식 
     System.out.println("detail1:" + article_no);
     return "index"; // 클릭하면 상세보기 후 다시 index로 돌아감
     
@@ -45,6 +45,8 @@ public class MyController3 {
    *  1) 요청 파라미터를 필드로 가진 객체를 커맨드 객체라고 한다.
    *  2) 요청 파라미터를 setter 를 이용하여 필드에 저장한다.
    *  3) 자동으로 Model 에 저장된다.
+   *  
+   *  받을 땐 request , 보낼 땐 Model
    */
   
   @RequestMapping(value="/article/detail3.do" , method=RequestMethod.GET)
