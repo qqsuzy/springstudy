@@ -10,7 +10,6 @@
 
  -->
 
-
   <bean class="com.gdu.prj01.xml03.MyConnection"
         id="myConnection"
         scope="singleton">

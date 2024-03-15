@@ -56,6 +56,7 @@ public class BoardController {
    *    2) @Autowired 를 생략할 수 없다.
    *    3) 사실 메소드명은 상관이 없다.
    *    4) 매개변수 타입을 비교하여 같으면 가져옴 -> 필드로 전달됨
+   *    5) 메소드의 매개변수를 자동 주입 대상으로 봄
    *
    * private BoardService boardService;
    * 

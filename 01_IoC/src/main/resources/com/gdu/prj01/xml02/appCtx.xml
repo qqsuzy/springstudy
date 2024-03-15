@@ -7,6 +7,7 @@
         id="student"
         scope="singleton">
   
+   <!-- LIST -->
     <property name="scores">
       <list>
         <value>90</value>
@@ -15,6 +16,7 @@
       </list>
     </property>
     
+   <!-- SET --> 
     <property name="contacts">
       <set>
         <value>010-1111-2222</value>
@@ -22,6 +24,7 @@
       </set>
     </property>
     
+   <!-- MAP --> 
     <property name="friends">
       <map>
         <entry key="동네친구" value="길동" />

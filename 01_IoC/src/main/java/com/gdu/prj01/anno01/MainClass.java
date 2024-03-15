@@ -27,7 +27,9 @@ public class MainClass {
   public static void method2() {
     AbstractApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class);
     
-    Computer computer1 = ctx.getBean("computer1", Computer.class);
+    // Computer computer1 = ctx.getBean("computer1", Computer.class);
+    
+    Computer computer1 = (Computer) ctx.getBean("computer1"); // Computer 타입으로 캐스팅 => 빈을 가져올 때(getBean) 빈 타입을 지정하지 않아도 됨
     
     System.out.println(computer1.getModel());
     System.out.println(computer1.getPrice());
@@ -55,7 +57,7 @@ public class MainClass {
   }
   
   public static void main(String[] args) {
-    method3();
+    method2();
   }
 
 }
