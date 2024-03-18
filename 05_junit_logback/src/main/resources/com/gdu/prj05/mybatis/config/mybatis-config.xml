@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration 
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+ <configuration>
+  
+  <!-- settings  -->
+  <!-- 전통적인 데이터베이스 칼럼명 형태인 A_COLUMN을 CamelCase형태의 자바 프로퍼티명 형태인 aColumn으로 자동으로 매핑하도록 함 -->
+  <settings>
+    <setting name="mapUnderscoreToCamelCase" value="true"/>
+  </settings>
+  
+  <!-- typeAliases -->
+  <typeAliases>
+    <typeAlias alias="ContactDto" type="com.gdu.prj05.dto.ContactDto"/>
+  </typeAliases>
+  
+  <!--  
+  
+     #mybatis 사용하면 달라지는 점
+    1.  Connection, ResultSet, PreparedStatement (dao 삼총사)를 
+        사용하지 않음 -> SqlSession을 사용함.
+        
+    2. ┌──────┐  ┌────────┐             
+       | Dao  |  | mapper |        => 자바코드와 SQL 쿼리문은 분리되어 작성
+       | java |  |  SQL   |        => 다른 부분은 JDBC 와 동일하고 DAO 부분만 다름
+       └──────┘  └────────┘
+       
+    3. !DOCTYPE 에 따라 확장자 포함 여부가 달라짐 
+       - configuration 은 확장자 포함 , mapper 은 확장자 미포함
+       configuration mapper =>  "com/gdu/prj/dao/board_t.xml"
+       mapper mapper        =>  "com.gdu.prj.dao.board_t"
+         
+   -->
+  
+ </configuration>

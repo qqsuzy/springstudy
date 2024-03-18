@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+  <!-- 로그를 찍어줌, 어떤 형식으로 찍어낼 지 세팅 -->
+	<!-- Appenders -->
+  <!-- Console view 에 로그를 찍는 Appender -->
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <!--      1) 시간                      2) 로그레벨 3) 어떤 클래스에서 출력된 로그인지 -->
+      <pattern>[%d{HH:mm:ss.SSS, Asia/Seoul}]%-5level:%logger-%msg%n</pattern> 
+    </encoder>
+  </appender>
+  
+	<!-- Application Loggers -->
+  <!--  에러 발생시,  -->
+	<logger name="com.gdu.prj05">
+		<level value="info" />
+	</logger>
+	
+	<!-- 3rdparty Loggers -->
+	<logger name="org.springframework">
+		<level value="info" />
+	</logger>
+
+	<!-- Root Logger -->
+	<root>
+		<priority value="warn" />
+		<appender-ref ref="console" /> <!-- console (appender 이름) 을 가져다 씀-->
+	</root>
+	
+</configuration>
