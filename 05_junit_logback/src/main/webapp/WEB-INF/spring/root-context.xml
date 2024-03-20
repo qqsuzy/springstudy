@@ -4,46 +4,5 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
 	
 	<!-- Root Context: defines shared resources visible to all other web components -->
-	<!-- 커넥션 풀 설정 (1) -->
-  <bean class="com.zaxxer.hikari.HikariConfig"
-        id="hikariConfig"
-        scope="singleton">
-    <property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
-    <property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe"/>
-    <property name="username" value="GD"/>
-    <property name="password" value="1111"/>
-  </bean>
-  
-  <!-- 커넥션 풀 설정 (2) -->
-  <bean class="com.zaxxer.hikari.HikariDataSource"
-        id="hikariDataSource"
-        scope="singleton">
-     <constructor-arg ref="hikariConfig"/>
-  </bean>  
-  	
-    <!-- 
-      jsp/servlet
-      SqlSession / SqlSessionFactory
-      
-      Spring
-      SqlSessionTemplate / SqlSessionFactory
-     -->
-     
-  <!-- mybatis 설정 (1)-->
-  <bean class="org.mybatis.spring.SqlSessionFactoryBean"
-        id="sqlSessionFactoryBean"
-        scope="singleton">
-     <property name="dataSource" ref="hikariDataSource"/>
-      <!--  mybatis config 파일의 이름과 경로 -->
-     <property name="configLocation" value="com/gdu/prj05/mybatis/config/mybatis-config.xml"/>
-      <!--  mapper 파일의 이름과 경로 (*.xml : 모든 xml 파일) -->
-     <property name="mapperLocations" value="com/gdu/prj05/mybatis/mapper/*.xml"/>
-  </bean> 
-  <!-- mybatis 설정 (2)  =>  위의 bean 들은 최종적으로 SqlSessionTemplate 을 만들기 위한 재료들임 -->
-  <bean class="org.mybatis.spring.SqlSessionTemplate"
-        id="sqlSessionTemplate"
-        scope="singleton">
-     <constructor-arg ref="sqlSessionFactoryBean"/>      
-  </bean> 
-    
+		
 </beans>

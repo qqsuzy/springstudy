@@ -10,5 +10,5 @@ public class MvcController {
   public String welcome() {
     return "index";
   }
-  
+
 }
