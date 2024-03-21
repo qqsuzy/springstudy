@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+  
+  <!-- Root Context: defines shared resources visible to all other web components -->
+    
+  <bean class="com.zaxxer.hikari.HikariConfig"
+        id="hikariConfig"
+        scope="singleton"
+        p:driverClassName="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+        p:jdbcUrl="jdbc:log4jdbc:oracle:thin:@localhost:1521:xe"
+        p:username="GD"
+        p:password="1111"/>
+  
+  <!-- DataSource -->  <bean class="com.zaxxer.hikari.HikariDataSource"
+        id="hikariDataSource"
+        scope="singleton">
+    <constructor-arg ref="hikariConfig"/>
+  </bean>
+  
+   <bean class="org.mybatis.spring.SqlSessionFactoryBean"
+        id="sqlSessionFactoryBean"
+        scope="singleton">
+    <property name="dataSource" ref="hikariDataSource"/>
+    <property name="configLocation"  value="classpath:com/gdu/prj07/mybatis/config/mybatis-config.xml"/>
+    <property name="mapperLocations" value="classpath:com/gdu/prj07/mybatis/mapper/*.xml"/>
+  </bean>
+  
+  <bean class="org.mybatis.spring.SqlSessionTemplate"
+        id="sqlSessionTemplate"
+        scope="singleton">
+    <constructor-arg ref="sqlSessionFactoryBean"/>
+  </bean>
+  
+  <bean class="com.gdu.prj07.dao.ContactDaoImpl"
+        id="contactDao"
+        scope="singleton">
+    <constructor-arg ref="sqlSessionTemplate"/>
+  </bean>
+  
+  <bean class="com.gdu.prj07.service.ContactServiceImpl"
+        id="contactService"
+        scope="singleton">
+    <constructor-arg ref="contactDao" />
+  </bean>
+  
+  <bean class="com.gdu.prj07.controller.ContactController"
+        id="contactController"
+        scope="singleton">
+    <constructor-arg ref="contactService"/>      
+  </bean>
+  
+   <!-- 트랜잭션 관리자 등록 -->
+  <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+        id="dataSourceTransactionManager"
+        scope="singleton">
+      <property name="dataSource" ref="hikariDataSource"/>
+  </bean>
+  
+  <!-- 트랜잭션 Advice 등록 -->
+  <tx:advice transaction-manager="dataSourceTransactionManager"
+             id="txAdvice">
+    <!-- 트랜잭션 속성 설정 -->
+    <tx:attributes>
+    <!-- 어떤 메소드에 트랜잭션을 적용할지 -->
+      <tx:method name="*"/>    <!-- 모든 메소드 -->
+      <tx:method name="get*" read-only="true"/> <!-- 예외 메소드 : DB가 변하지 않는 메소드(SELETE)는 읽기전용 (read-only) 처리  => 읽기 전용으로 적용해두면 트랜잭션 처리 대상이 아님 (get으로 시작하는 메소드는 SELETE 메소드임) --> 
+    </tx:attributes>
+  </tx:advice>
+  
+  <!-- Aspect 설정 -->
+  <aop:config>
+    <aop:pointcut expression="execution (* com.gdu.prj07.service.*Impl.*(..))" 
+                  id="txPointCut"/>
+     <aop:advisor advice-ref="txAdvice"
+                  pointcut-ref="txPointCut"/> <!-- Advisor : Advice 를 동작시킴 -->
+  </aop:config>
+  
+  <!-- AspectJ 허용 (@EnableAspectJAutoProxy) -->
+  <aop:aspectj-autoproxy/>
+  
+  
+</beans>
