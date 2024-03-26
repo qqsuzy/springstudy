@@ -16,8 +16,8 @@
    <div>
     <h1>회원관리</h1>
     <div>
-      <label for="email">이메일</label>
-      <input type="text" id="email">
+      <label for="jqEmail">이메일</label>
+      <input type="text" id="jqEmail">
     </div>
     <div>
       <label for="name">이름</label>
@@ -88,7 +88,7 @@
          }
        </script>
     </div>
-    <div>
+     <div>
       <button id="btn-init">초기화</button>
       <button id="btn-register">등록</button>
       <button id="btn-modify">수정</button>
@@ -98,6 +98,15 @@
     <hr>
     
     <div>
+      <select id="display">
+        <option>20</option>
+        <option>50</option>
+        <option>100</option>
+      </select>
+    </div>
+    
+    <div>
+      <div id="total"></div>
       <table border="1">
         <thead>
           <tr>
@@ -114,71 +123,63 @@
             <td colspan="5" id="paging"></td>
           </tr>
         </tfoot>
-      </table>  
-    </div>  
+      </table>
+      <button type="button" id="btn-select-remove">선택삭제</button>
+    </div> 
           
   </div>
-  <script>
   
-    // jQuery 객체 선언
-    var email = $('#email');
-    var mName = $('#name');
-    var gender = $(':radio[name=gender]');
-    var zonecode = $('#zonecode');
-    var address = $('#address');
-    var detailAddress = $('#detailAddress');
-    var extraAddress = $('#extraAddress');
-    var btnInit = $('#btn-init');
-    var btnRegister = $('#btn-register');
-    var btnModify = $('#btn-modify');
-    var btnRemove = $('#btn-remove');
-     
-    // 함수 표현식 (함수 만들기)
-    const fnInit = ()=>{
-    // 초기화     
-  	email.val('');
-    mName.val('');
-    $('#none').prop('checked', true); // 선택안함 radio 버튼을 체크를 기본으로 해줌 => 자매품 : $('#none').attr('checked', 'checked');
-    zonecode.val('');
-    address.val('');
-    detailAddress.val('');
-    extraAddress.val('');
-   }
-     
-    const fnRegisterMember = ()=>{
-    	$.ajax({
-    		 // 요청 (요청 본문(body)에 데이터를 실어서 보냄)
-            type: 'POST',
-            url: '${contextPath}/members',
-            contentType: 'application/json',  // (java로) 보내는 데이터의 타입
-            data: JSON.stringify({            // 보내는 데이터(문자열 형식의 JSON 데이터) => json 데이터를 보낼 때 (js -> server) 문자열로 보내야 함 (js표준 객체화 함수)
-              'email': email.val(),
-              'name': mName.val(),
-              'gender': $(':radio:checked').val(),  // radio에서 체크된 요소의 값(value)
-              'zonecode': zonecode.val(),
-              'address': address.val(),
-              'detailAddress': detailAddress.val(),
-              'extraAddress': extraAddress.val()
-            }),
-            // 응답
-            dataType: 'json'  // 받는 데이터 타입
-          }).done(resData=>{  // resData = {"insertCount": 2}
-            if(resData.insertCount === 2){
-            	alert('정상적으로 등록되었습니다.');
-            	fnInit();
-            }
-          }).fail(jqXHR=>{    // UNIQUE 관련 오류(eamil 중복)는 fail 로 넘어옴
-            alert(jqXHR.responseText);
-          })
-    	
-       }
-     
-       // 함수 호출 및 이벤트 
-       fnInit();                                  // 일반 실행 (Init은 2가지 필요)
-       btnInit.on('click', fnInit);               // 초기화 버튼 클릭 (Init은 2가지 필요)
-       btnRegister.on('click', fnRegisterMember); // 등록 버튼 클릭
-       
-       
+  <script src="${contextPath}/resources/js/member.js"></script> <!-- 경로는 servlt-context.xml 파일 내에 명시된 resources 에 매핑값 확인 후 작성 -->
+  
+  <script>
+
+//jQuery 객체 선언
+
+// 상세보기 -- 함수 표현식 (함수 만들기)
+const getMemberByNo = (evt)=>{
+  $.ajax({
+    type: 'GET',
+    url: getContextPath() + '/members/' + evt.target.dataset.memberNo, // evt.target : 클릭한 상세버튼 , $(evt.target).data('memberNo') => jQuery 버전(자매품) | evt.target.dataset.memberNo => js 버전
+    dataType: 'json'
+  }).done(resData=>{ /* resData = {
+	                        "addressList": [
+	                        	{
+	                        		"addressNo" : 1,
+	                        		"zonecode": "12345",
+	                        		"address": "서울시 구로구 디지털로",
+	                        		"detailAddress": "카카오",
+	                        		"extraAddress": "(가산동)"
+	                        	},
+	                        	...
+	                        ],
+		                      "member" : {
+		                    	  "memberNo": 1,
+		                    	  "jqEmail": "jqEmail@jqEmail.com",
+		                    	  "name": "gildong",
+		                    	  "gender": "man"
+		                      }
+                         }
+	                    */
+	 
+	   
+
+	                    
+	                    
+	    jqEmail.val(resData.member.jqEmail);
+	    mName.val(resData.member.name);
+	    $(':radio[value=' + resData.member.gender + ']').prop('checked', true); // gender 값에 맞게 radio 버튼을 체크됨
+	    zonecode.val(resData.addressList[0].zonecode);
+	    address.val(resData.addressList[0].address);
+	    detailAddress.val(resData.addressList[0].detailAddress);
+	    extraAddress.val(resData.addressList[0].extraAddress);
+	  }).fail(jqXHR=>{
+	    alert(jqXHR.statusText + '(' + jqXHR.status + ')');
+	  })
+	}
+ 
+  // 함수 호출 및 이벤트 
+  $(document).on('click', '.btn-detail', (evt)=>{ getMemberByNo(evt); }) // (이벤트타입, 이벤트대상, 이벤트함수(evt 객체를 함수로 전달함))
+
   </script>
   
 </body>

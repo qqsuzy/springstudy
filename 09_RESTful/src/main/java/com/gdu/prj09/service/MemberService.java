@@ -21,7 +21,7 @@ public interface MemberService {
   
   // single page 구현을 위해 service 가 반환하는 값은 통일해야함
   ResponseEntity<Map<String, Object>> getMembers(int page, int display);  // ResponseEntity : @ResponseBody 가 품고 있는 클래스 , 타입은 제네릭 타입에 명시 => Map에 List와 int 값을 담음
-  ResponseEntity<MemberDto> getMemberByNo(int memberNo);                  // 상세보기
+  ResponseEntity<Map<String, Object>> getMemberByNo(int memberNo);        // 상세보기
   ResponseEntity<Map<String, Object>> registerMember(Map<String, Object> map, HttpServletResponse response); // response는 예외 발생시 예외메시지 만들어서 응답해주는 용도로 사용
   ResponseEntity<Map<String, Object>> modifyMember(MemberDto member);     // 회원 정보 수정 (Email은 아이디의 역할을 함) 
   ResponseEntity<Map<String, Object>> removeMember(int memberNo);         // 회원 1명 삭제

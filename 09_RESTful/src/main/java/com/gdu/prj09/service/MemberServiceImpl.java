@@ -1,6 +1,7 @@
 package com.gdu.prj09.service;
 
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,14 +25,50 @@ public class MemberServiceImpl implements MemberService {
   private final MyPageUtils myPageUtils;
   
   @Override
-  public ResponseEntity<Map<String, Object>> getMembers(int page, int display) {
-    return null;
+  public ResponseEntity<Map<String, Object>> getMembers(int page, int display) { // 반환타입이 Map 으로 잡혀있는 이유 => total 과 members 저장하기 위함
+    
+    // 전체 개수
+    int total = memberDao.getTotalMemberCount();
+    
+    myPageUtils.setPaging(total, display, page);
+    
+    Map<String, Object> params = Map.of("begin", myPageUtils.getBegin()
+                                       , "end", myPageUtils.getEnd());
+    
+    // 목록
+    List<AddressDto> members = memberDao.getMemberList(params);
+   
+    // Map으로 members, total 값과 상태값 저장 후 반환 -> ajax 에 .done()이 결과값을 받음
+    return new ResponseEntity<Map<String,Object>>(Map.of("members", members
+                                                       , "total", total
+                                                       , "paging", myPageUtils.getAsyncPaging())
+                                                  , HttpStatus.OK);
   }
 
   @Override
-  public ResponseEntity<MemberDto> getMemberByNo(int memberNo) {
-    // TODO Auto-generated method stub
-    return null;
+  public ResponseEntity<Map<String, Object>> getMemberByNo(int memberNo) {
+    
+    // Address 목록 가져올 때 필요한 작업
+    int total = memberDao.getTotalAddressCountByNo(memberNo);
+    int page = 1;
+    int display = 20;
+    
+    myPageUtils.setPaging(total, display, page);
+    
+    // Address 목록 가져오기
+    Map<String, Object> params = Map.of("memberNo", memberNo, "begin"
+                                       , myPageUtils.getBegin(), "end"
+                                       , myPageUtils.getEnd());
+    
+    
+    List<AddressDto> addressList = memberDao.getAddressListByNo(params);
+    
+    // 회원정보 가져오기
+    MemberDto member = memberDao.getMemberByNo(memberNo);
+    
+    return new ResponseEntity<Map<String,Object>>(Map.of("addressList", addressList
+                                                        , "member", member)
+                                                 , HttpStatus.OK);
   }
 
   @Override
