@@ -13,28 +13,29 @@
 
 <!-- Daum PostCode Service : https://postcode.map.daum.net/guide => 사용자가 선택한 값 이용하기 -->
 
-   <div>
-    <h1>회원관리</h1>
     <div>
-      <label for="jqEmail">이메일</label>
-      <input type="text" id="jqEmail">
+    <h1>회원관리</h1>
+    <input type="hidden" id="member-no"> <!-- hidden 처리, 수정할 때 value값 확인 가능 => F12로 확인 -->
+    <div>
+      <label for="email">이메일</label>
+      <input type="text" id="email">
     </div>
     <div>
       <label for="name">이름</label>
       <input type="text" id="name">
     </div>
     <div>
-      <label for="none">선택안함</label>
       <input type="radio" name="gender" id="none" value="none" checked>
-      <label for="man">남자</label>
+      <label for="none">선택안함</label>
       <input type="radio" name="gender" id="man" value="man">
-      <label for="woman">여자</label>
+      <label for="man">남자</label>
       <input type="radio" name="gender" id="woman" value="woman">
+      <label for="woman">여자</label>
     </div>
     <div>
-      <input type="text" id="zonecode" placeholder="우편번호">
+      <input type="text" id="zonecode" onclick="execDaumPostcode()" placeholder="우편번호" readonly>
       <input type="button" onclick="execDaumPostcode()" value="우편번호 찾기"><br>
-      <input type="text" id="address" placeholder="주소"><br>
+      <input type="text" id="address" placeholder="주소" readonly><br>
       <input type="text" id="detailAddress" placeholder="상세주소">
       <input type="text" id="extraAddress" placeholder="참고항목">
       <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
@@ -98,13 +99,13 @@
     <hr>
     
     <div>
+      <button type="button" id="btn-select-remove">선택삭제</button>
       <select id="display">
         <option>20</option>
         <option>50</option>
         <option>100</option>
       </select>
     </div>
-    
     <div>
       <div id="total"></div>
       <table border="1">
@@ -124,61 +125,19 @@
           </tr>
         </tfoot>
       </table>
-      <button type="button" id="btn-select-remove">선택삭제</button>
     </div> 
           
   </div>
   
-  <script src="${contextPath}/resources/js/member.js"></script> <!-- 경로는 servlt-context.xml 파일 내에 명시된 resources 에 매핑값 확인 후 작성 -->
-  
+  <script src="${contextPath}/resources/js/member.js?dt=<%=System.currentTimeMillis()%>"></script> <!-- 경로는 servlt-context.xml 파일 내에 명시된 resources 에 매핑값 확인 후 작성 -->
   <script>
 
 //jQuery 객체 선언
 
-// 상세보기 -- 함수 표현식 (함수 만들기)
-const getMemberByNo = (evt)=>{
-  $.ajax({
-    type: 'GET',
-    url: getContextPath() + '/members/' + evt.target.dataset.memberNo, // evt.target : 클릭한 상세버튼 , $(evt.target).data('memberNo') => jQuery 버전(자매품) | evt.target.dataset.memberNo => js 버전
-    dataType: 'json'
-  }).done(resData=>{ /* resData = {
-	                        "addressList": [
-	                        	{
-	                        		"addressNo" : 1,
-	                        		"zonecode": "12345",
-	                        		"address": "서울시 구로구 디지털로",
-	                        		"detailAddress": "카카오",
-	                        		"extraAddress": "(가산동)"
-	                        	},
-	                        	...
-	                        ],
-		                      "member" : {
-		                    	  "memberNo": 1,
-		                    	  "jqEmail": "jqEmail@jqEmail.com",
-		                    	  "name": "gildong",
-		                    	  "gender": "man"
-		                      }
-                         }
-	                    */
-	 
-	   
+// 함수 표현식 (함수 만들기)
 
-	                    
-	                    
-	    jqEmail.val(resData.member.jqEmail);
-	    mName.val(resData.member.name);
-	    $(':radio[value=' + resData.member.gender + ']').prop('checked', true); // gender 값에 맞게 radio 버튼을 체크됨
-	    zonecode.val(resData.addressList[0].zonecode);
-	    address.val(resData.addressList[0].address);
-	    detailAddress.val(resData.addressList[0].detailAddress);
-	    extraAddress.val(resData.addressList[0].extraAddress);
-	  }).fail(jqXHR=>{
-	    alert(jqXHR.statusText + '(' + jqXHR.status + ')');
-	  })
-	}
- 
-  // 함수 호출 및 이벤트 
-  $(document).on('click', '.btn-detail', (evt)=>{ getMemberByNo(evt); }) // (이벤트타입, 이벤트대상, 이벤트함수(evt 객체를 함수로 전달함))
+// 함수 호출 및 이벤트 
+
 
   </script>
   

@@ -87,8 +87,8 @@
       }
     }
      
-     // 비동기 처리
-       const fnAsyncUpload = ()=>{
+    // 비동기 처리 (fetch, then)
+    const fnAsyncUpload = ()=>{
       const inputFiles = document.getElementById('input-files');
       const inputWriter = document.getElementById('input-writer');
       let formData = new FormData();
@@ -109,6 +109,7 @@
         })
     }
      
+      // jQuery ajax 로 처리
       const fnAsyncUpload2 = ()=>{
           const inputFiles = document.getElementById('input-files');
           const inputWriter = document.getElementById('input-writer');

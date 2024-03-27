@@ -7,9 +7,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.gdu.prj09.service.MemberService;
@@ -31,10 +33,10 @@ import lombok.RequiredArgsConstructor;
  *            | /members/page/1            |
  *            | /members/page/1/display/20 |
  *    2) 상세 | /members/1                 |  GET
- *    3) 삽입 | /members                   |  POST   => 삽입과 수정은 방식으로 구분 가능 (주소 같음, POST or PUT)
+ *    3) 삽입 | /members                   |  POST   => 삽입과 수정은 방식으로 구분 가능 (주소 같음, POST or PUT) => PUT은 POST방식으로 동작함 => RESTful 방식은 사실 상 삽입과 수정이 매우 유사하게 동작됨 (주소가 아닌 Body에 실어서 데이터 전송)
  *    4) 수정 | /members                   |  PUT
- *    5) 삭제 | /members/1                 |  DELETE  => 상세와 삭제는 방식으로 구분 가능 (주소 같음, GET or DELETE)
- *            | /members/1,2,3     
+ *    5) 삭제 | /member/1                  |  DELETE  => 상세와 삭제는 방식으로 구분 가능 (주소 같음, GET or DELETE)
+ *            | /members/1,2,3      => 1개 삭제: member , 여러개 삭제: members 로 구분 (/member/ 뒤에 오는 삭제번호를 인식하지 못하기 때문)
  */
 
 @RequiredArgsConstructor
@@ -49,6 +51,8 @@ public class MemberController {
     // /admin/member.do ======> /WEB-INF/views/admin/member.jsp
   }
   
+ // 삽입 
+ // Controller는 Service가 주는 데이터를 그대로 받아와서 전달만 하는 전달자 역할을 함 
  @PostMapping(value="/members", produces="application/json")
  // 문자열 형식의 json 데이터를 분리해서 각각의 DTO(MemberDto , AddressDto)로 받을 수 없기 때문에 2가지 방법으로 처리 가능함 => 1. 새로운 DTO 생성(한 번에 받을 수 있는 DTO) 2. MAP 으로 받기
  public ResponseEntity<Map<String, Object>> registerMember(@RequestBody Map<String, Object> map  // @RequestBody : 요청 본문 (받아내기 위해 사용)
@@ -74,5 +78,22 @@ public class MemberController {
    return memberService.getMemberByNo(memberNo);
  }
  
+ // 수정
+ @PutMapping(value="/members", produces="application/json")
+ public ResponseEntity<Map<String, Object>> modifyMember(@RequestBody Map<String, Object> map) {
+   return memberService.modifyMember(map);
+ }
+
+ // 삭제 (CASCADE 적용해두어서 member 가 삭제되면 자동으로 address 데이터도 함께 삭제됨 => 외래키 옵션)
+ @DeleteMapping(value="/member/{memberNo}", produces="application/json")
+ public ResponseEntity<Map<String, Object>> removeMember(@PathVariable(value="memberNo", required=false) Optional<String> opt) {
+   int memberNo = Integer.parseInt(opt.orElse("0"));
+   return memberService.removeMember(memberNo);
+ }
+
+ @DeleteMapping(value="/members/{memberNoList}", produces="application/json")
+ public ResponseEntity<Map<String, Object>> removeMembers(@PathVariable(value="memberNoList", required=false) Optional<String> opt){
+   return memberService.removeMembers(opt.orElse("0"));
+ }
  
 }
