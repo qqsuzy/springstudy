@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.gdu</groupId>
+  <artifactId>prj10</artifactId> <!-- 프로젝트 이름 -->
+  <name>10_editor</name>
+  <packaging>war</packaging>
+  <version>1.0.0-BUILD-SNAPSHOT</version>
+  
+  <properties>
+    <java-version>11</java-version>
+    <org.springframework-version>5.3.19</org.springframework-version>
+    <org.aspectj-version>1.9.19</org.aspectj-version>
+    <org.slf4j-version>2.0.12</org.slf4j-version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+  
+  <dependencies>
+
+    <!-- https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder -->
+    <!--
+      jackson-databind / jackson-core / jackson-annotations >= 2.12.0
+      logback-core >= 1.3.0
+      logback-classic >= 1.3.0
+      slf4j-api >= 2.0
+    -->
+    <dependency>
+      <groupId>net.logstash.logback</groupId>
+      <artifactId>logstash-logback-encoder</artifactId>
+      <version>7.4</version>
+      <!-- Use runtime scope if the project does not have any compile-time usage of logstash-logback-encoder,
+         such as usage of StructuredArguments/Markers or implementations such as
+         JsonProvider, AppenderListener, JsonFactoryDecorator, JsonGeneratorDecorator, etc
+      <scope>runtime</scope> -->
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.11.0</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.5</version>
+    </dependency>
+  
+    <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.8.2</version>
+      <scope>test</scope>
+    </dependency>
+  
+    <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+      <version>${org.aspectj-version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    
+    <!-- 실행하는 쿼리문을 로그로 남김  --> 
+    <!-- https://mvnrepository.com/artifact/org.bgee.log4jdbc-log4j2/log4jdbc-log4j2-jdbc4.1 -->
+    <dependency>
+      <groupId>org.bgee.log4jdbc-log4j2</groupId>
+      <artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
+      <version>1.16</version>
+    </dependency>
+  
+    <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${org.slf4j-version}</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>4.0.3</version>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>${org.springframework-version}</version>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+    <dependency>
+      <groupId>org.mybatis</groupId>
+      <artifactId>mybatis</artifactId>
+      <version>3.5.13</version>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+    <dependency>
+      <groupId>org.mybatis</groupId>
+      <artifactId>mybatis-spring</artifactId>
+      <version>2.1.1</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.3.14</version>
+      <!-- 개발중에는 주석처리, 운영 들어가면 주석해제(로그찍기) => 개발 중에는 runtime 넣으면 불편하기 때문 
+           Use runtime scope if the project does not have any compile-time usage of logback,
+           such as implementations of Appender, Encoder, Layout, TurboFilter, etc
+      <scope>runtime</scope> -->
+    </dependency>
+  
+    <!-- https://mvnrepository.com/artifact/org.springframework/spring-test -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <version>${org.springframework-version}</version>
+      <scope>test</scope>
+    </dependency>
+  
+    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.16.1</version>
+    </dependency>
+  
+    <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.30</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc8 -->
+    <dependency>
+      <groupId>com.oracle.database.jdbc</groupId>
+      <artifactId>ojdbc8</artifactId>
+      <version>23.2.0.0</version>
+    </dependency>
+  
+    <!-- Spring -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${org.springframework-version}</version>
+      <exclusions>
+        <!-- Exclude Commons Logging in favor of SLF4j -->
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+         </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>${org.springframework-version}</version>
+    </dependency>
+        
+    <!-- AspectJ -->
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+      <version>${org.aspectj-version}</version>
+    </dependency>
+
+    <!-- @Inject -->
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>4.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/javax.servlet.jsp/javax.servlet.jsp-api -->
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>javax.servlet.jsp-api</artifactId>
+      <version>2.3.3</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+    </dependency>
+  
+   <!-- Test -->
+  <dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>4.13.2</version>
+    <scope>test</scope>
+  </dependency>
+
+  </dependencies>
+  
+    
+   <!-- 
+   
+      1. 빌드와 배포
+        1) 빌드 : 프로젝트를 배포하기 위해서 프로젝트를 하나의 파일(war, jar)로 만드는 과정. Maven Compiler 가 필요하다.
+        2) 배포 : 빌드 결과(war, jar)를 WAS에 배포하는 것
+      
+      2. 빌드 (STS 를 이용한 빌드)
+        1) Run As - Maven Build
+        2) 빌드 결과 파일명
+          (1) 기본값 : artifactId-version.packging
+          (2) 사용자 지정 : <finalName> 태그 
+        3) 빌드 결과 파일 위치
+          프로젝트\target
+       
+        - 빌드가 실패되는 경우:  프로젝트가 오류가 있는 경우     
+        - 이클립스 자체에서 제공하는 Maven Compiler 사용하여 빌드 후 직접(수동) 배포하는 방법
+      
+       3. 배포 (WAS 에 직접 배포/수동배포)
+         1) WAS 가 STOP 상태인지 확인하고 만약 START 상태라면 STOP 상태로 바꾼다. (오류 방지)
+
+         2) CATALINA_HOME\webapps 디렉터리에 빌드 결과 파일을 가져간다.
+
+         3) WAS 를 START 한다. 
+           (1) Windows 서버 : CATALINA_HOME\bin\startup.bat (startup.bat -> 우클릭 -> 관리자 권한으로 실행)
+           (2) Linux 서버   : CATALINA_HOME\bin\startup.sh
+      
+         4) 빌드 결과 파일 이름과 동일한 디렉터리가 생성되는지 확인한다. (webapps 에서)
+           WAS에 배포된 프로젝트는 폴더로 압축이 풀림 -> 압축이 풀린 디렉터리의 이름은 contextPath 임
+           (ex prj10.was 의 was는 압축된 파일로 톰캣에 배포되면 압축이 풀려서 디렉터리가 뿅! 하고 나옴)
+           => 결국 빌드 파일의 이름은 contextPath, 로컬에서 동일한 환경으로 실행되기 위해서 finalName을 artifactId로 등록해둔 것 => 곧 contextPath로! 
+           => 빌드파일의 이름에 따라서 contextPath는 변경될 수 있음 (언제든지 변경될 수 있기 때문에 코드 내에 contextPath를 변수로 처리하는 이유임)
+
+         5) 웹 브라우저를 열고 배포 결과를 확인한다.
+           http://localhost:8080/빌드결과파일명(=디렉터리이름 -> 확장자는 제외)  
+
+         6) WAS 를 STOP 하는 방법 
+           (1) Windows 서버 : CATALINA_HOME\bin\shutdown.bat (startup.bat -> 우클릭 -> 관리자 권한으로 실행)
+           (2) Linux 서버   : CATALINA_HOME\bin\shutdown.sh
+
+         7) 예시
+           (1) prj10.war -> http://localhost:8080/prj10/
+           (2) myapp.war -> http://localhost:8080/myapp/
+           (3) ROOT.war  -> http://localhost:8080/       (Spring Boot 프로젝트에서는 ROOT가 기본으로 설정되어 있음)
+          ** 빌드 결과 파일 이름을 ROOT로 설정하면 contextpath 없이 주소를 설정할 수 있음
+             http://localhost:8080
+          
+           Linux 서버 배포 방법
+           1) war 파일이 있는 디렉터리 내에서 우클릭하여 cmd 실행
+           2) copy 하기
+              cp ./prj10.war /GDJ77/tools/apach-tomcat-9.0.86/prj10.war
+             (1) cp ./prj10.war => copy 하겠다, . 현재디렉터리에서 /prj10.war 라는 파일
+             (2) /GDJ77/tools/apach-tomcat-9.0.86/prj10.war => copy 할 디렉터리/파일
+             
+           3) WAS를 START 한다.
+              /GDJ77/tools/apache-tomcat-9.0.86/bin/startup.bat
+             (1) startup.bat의 위치를 작성
+             (2) 리눅스 환경(MAC OS) 에서는 startup.sh 파일을 실행
+                          
+          반자동 배포
+          github에 올리기 -> build 버튼을 누름 -> tomcat에 배포 
+    -->
+    
+  <build>
+  
+    <!-- deploy file (배포 파일) 이름 바꾸기 -->
+    <finalName>${artifactId}</finalName>
+  
+    <plugins>
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.9</version>
+        <configuration>
+          <additionalProjectnatures>
+            <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
+          </additionalProjectnatures>
+          <additionalBuildcommands>
+            <buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
+          </additionalBuildcommands>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <source>${java-version}</source>
+          <target>${java-version}</target>
+          <compilerArgument>-Xlint:all</compilerArgument>
+          <showWarnings>true</showWarnings>
+          <showDeprecation>true</showDeprecation>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <configuration>
+          <mainClass>org.test.int1.Main</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+    
+</project>
