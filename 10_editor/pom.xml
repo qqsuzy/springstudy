@@ -4,7 +4,7 @@
 	
   <modelVersion>4.0.0</modelVersion>
 	<groupId>com.gdu</groupId>
-	<artifactId>prj10</artifactId>
+	<artifactId>prj10</artifactId> <!-- 프로젝트 이름 -->
 	<name>10_editor</name>
 	<packaging>war</packaging>
 	<version>1.0.0-BUILD-SNAPSHOT</version>
@@ -17,7 +17,6 @@
   </properties>
   
   <dependencies>
-
 
     <!-- https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder -->
     <!--
@@ -204,6 +203,68 @@
     </dependency>
   
   </dependencies>
+    
+   <!-- 
+   
+      1. 빌드와 배포
+        1) 빌드 : 프로젝트를 배포하기 위해서 프로젝트를 하나의 파일(war, jar)로 만드는 과정. Maven Compiler 가 필요하다.
+        2) 배포 : 빌드 결과(war, jar)를 WAS에 배포하는 것
+      
+      2. 빌드 (STS 를 이용한 빌드)
+        1) Run As - Maven Build
+        2) 빌드 결과 파일명
+          (1) 기본값 : artifactId-version.packging
+          (2) 사용자 지정 : <finalName> 태그 
+        3) 빌드 결과 파일 위치
+          프로젝트\target
+       
+        - 빌드가 실패되는 경우:  프로젝트가 오류가 있는 경우     
+        - 이클립스 자체에서 제공하는 Maven Compiler 사용하여 빌드 후 직접(수동) 배포하는 방법
+      
+       3. 배포 (WAS 에 직접 배포/수동배포)
+         1) WAS 가 STOP 상태인지 확인하고 만약 START 상태라면 STOP 상태로 바꾼다. (오류 방지)
+
+         2) CATALINA_HOME\webapps 디렉터리에 빌드 결과 파일을 가져간다.
+
+         3) WAS 를 START 한다. 
+           (1) Windows 서버 : CATALINA_HOME\bin\startup.bat (startup.bat -> 우클릭 -> 관리자 권한으로 실행)
+           (2) Linux 서버   : CATALINA_HOME\bin\startup.sh
+      
+         4) 빌드 결과 파일 이름과 동일한 디렉터리가 생성되는지 확인한다. (webapps 에서)
+           WAS에 배포된 프로젝트는 폴더로 압축이 풀림 -> 압축이 풀린 디렉터리의 이름은 contextPath 임
+           (ex prj10.was 의 was는 압축된 파일로 톰캣에 배포되면 압축이 풀려서 디렉터리가 뿅! 하고 나옴)
+           => 결국 빌드 파일의 이름은 contextPath, 로컬에서 동일한 환경으로 실행되기 위해서 finalName을 artifactId로 등록해둔 것 => 곧 contextPath로! 
+           => 빌드파일의 이름에 따라서 contextPath는 변경될 수 있음 (언제든지 변경될 수 있기 때문에 코드 내에 contextPath를 변수로 처리하는 이유임)
+
+         5) 웹 브라우저를 열고 배포 결과를 확인한다.
+           http://localhost:8080/빌드결과파일명(=디렉터리이름 -> 확장자는 제외)  
+
+         6) WAS 를 STOP 하는 방법 
+           (1) Windows 서버 : CATALINA_HOME\bin\shutdown.bat (startup.bat -> 우클릭 -> 관리자 권한으로 실행)
+           (2) Linux 서버   : CATALINA_HOME\bin\shutdown.sh
+
+         7) 예시
+           (1) prj10.war -> http://localhost:8080/prj10/
+           (2) myapp.war -> http://localhost:8080/myapp/
+           (3) ROOT.war  -> http://localhost:8080/       (Spring Boot 프로젝트에서는 ROOT가 기본으로 설정되어 있음)
+          ** 빌드 결과 파일 이름을 ROOT로 설정하면 contextpath 없이 주소를 설정할 수 있음
+             http://localhost:8080
+          
+           Linux 서버 배포 방법
+           1) war 파일이 있는 디렉터리 내에서 우클릭하여 cmd 실행
+           2) copy 하기
+              cp ./prj10.war /GDJ77/tools/apach-tomcat-9.0.86/prj10.war
+             (1) cp ./prj10.war => copy 하겠다, . 현재디렉터리에서 /prj10.war 라는 파일
+             (2) /GDJ77/tools/apach-tomcat-9.0.86/prj10.war => copy 할 디렉터리/파일
+             
+           3) WAS를 START 한다.
+              /GDJ77/tools/apache-tomcat-9.0.86/bin/startup.bat
+             (1) startup.bat의 위치를 작성
+             (2) 리눅스 환경(MAC OS) 에서는 startup.sh 파일을 실행
+                          
+          반자동 배포
+          github에 올리기 -> build 버튼을 누름 -> tomcat에 배포 
+    -->
     
   <build>
   

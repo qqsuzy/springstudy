@@ -51,7 +51,7 @@
       	    	  }).then(response=>response.json()) // 응답을 받아서 json 데이터만 꺼냄
       	    			.then(resData=>{          // 여기서 무엇을 할지는 service 측에서 결정되어야 함
       	    				 $('#contents').summernote('insertImage', resData.src); // 받아온 경로를 insertImage(이미지를 만들어 줌)라는 속성으로 적용해서 등록한 이미지를 textarea 에 보여줌
-      	    				                                                        // insertImage : summernote 자체에서 제공하는 내장 속성⇒ 이미지를 만들어주는 기능을 제공함
+      	    				                                                        // insertImage : summernote 자체에서 제공하는 내장 속성 => 이미지를 삽입해주는 기능을 제공함
       	    			});
       	    	  }
 	    	  
