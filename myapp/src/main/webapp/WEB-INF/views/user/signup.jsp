@@ -38,15 +38,15 @@
    <form method="POST"
          action="${contextPath}/user/signup.do"
          id="frm-signup">
-     <div class="mb-3"> <!-- margin bottom 3 => 숫자값으로 크기 변경 가능 -->
-       <label for="email">아이디</label>
-       <input type="text" id="email" name="email" placeholder="example@example.com">
+     <div class="mb-3">                      <!-- margin bottom 3 => 숫자값으로 크기 변경 가능 -->
+       <label for="inp-email">아이디</label> <!-- 입력란은 id가 inp로 시작 -->
+       <input type="text" id="inp-email" name="email" placeholder="example@example.com">
        <!-- 인증코드 버튼 -->
        <button type="button" id="btn-code" class="btn btn-success">인증코드받기</button>
        <div id="msg-email"></div>
        <div class="mb-3">
          <!-- 이메일로 보낸 인증코드를 입력하는 텍스트창 (controller로 보내서 service 처리할 필요 x, front 단에서 javascript로 처리) -->
-         <input type="text" id="code" placeholder="인증코드입력" disabled> <!-- 입력란 막아두기(disabled) 디폴트 -> 인증성공 후 입력란 풀림 -->
+         <input type="text" id="inp-code" placeholder="인증코드입력" disabled> <!-- 입력란 막아두기(disabled) 디폴트 -> 인증성공 후 입력란 풀림 -->
          <button type="button" id="btn-verify-code" class="btn btn-success">인증하기</button>
        </div>
      </div>                 
@@ -110,10 +110,10 @@ const fnCheckEmail = ()=>{
 	  */
 	
 	
-  let email = document.getElementById('email');
+  let inpEmail = document.getElementById('inp-email');
   let regEmail = /^[A-Za-z0-9-_]{2,}@[A-Za-z0-9]+(\.[A-Za-z]{2,6}){1,2}$/; // ^ : 시작 , $ : 끝
   //이메일 정규식 체크 실패한 경우
-  if(!regEmail.test(email.value)) { 
+  if(!regEmail.test(inpEmail.value)) { 
 	  alert('이메일 형식이 올바르지 않습니다.');
 	  return;  
   }
@@ -127,7 +127,7 @@ const fnCheckEmail = ()=>{
 		  'Content-Type': 'application/json'
 	  },
 	  body: JSON.stringify({ // javascript 객체를 넣으면 JSON으로 변환
-		  'email': email.value
+		  'email': inpEmail.value
 	  })
   })
   //.then( (response) => { return response.json(); } ) 과 같은 코드( ↓ 생략 ver 코드)
@@ -138,12 +138,27 @@ const fnCheckEmail = ()=>{
 		  fetch(fnGetContextPath() + '/user/sendCode.do', {  // 이메일 중복 체크 통과 -> 인증코드 만들어서 이메일로 전송 
 			  method: 'POST',
 			  headers: {
-			    'Content-Type': 'application/json'
+				  'Content-Type': 'application/json'
 			   },
 			   body: JSON.stringify({ // javascript 객체를 넣으면 JSON으로 변환
-			     'email': email.value
+			     'email': inpEmail.value // email : 받는 사람(map에 들어있음)
 			  })
-		  }); 
+		  })
+		   .then(response => response.json())
+       .then(resData => {  // resData = {"code": "123qaz"}
+        let inpCode = document.getElementById('inp-code');
+        let btnVerifyCode = document.getElementById('btn-verify-code');
+        alert(inpEmail.value + '로 인증코드를 전송했습니다.'); // 1) 인증코드 전송
+        inpCode.disabled = false;                              // 2) disabled 풀어주기 (인증코드 입력 가능해짐)
+        btnVerifyCode.addEventListener('click', (evt) => {
+          if(resData.code === inpCode.value) {                 // 인증번호 코드와 사용자가 입력한 코드가 일치할 경우
+            alert('인증되었습니다.');
+          } else {
+            alert('인증되지 않았습니다.');
+          }
+        })
+      })
+		  
 		// 이메일 중복 체크 통과 X		  
 	  } else {  
 		  document.getElementById('msg-email').innerHTML = '이미 사용 중인 이메일입니다.'; // <div id="msg-email"></div> 에 메시지 뿌려줌

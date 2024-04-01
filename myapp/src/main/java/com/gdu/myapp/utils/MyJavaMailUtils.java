@@ -13,6 +13,7 @@ import javax.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 /*
  *  이메일 보내기 (모듈화)
@@ -22,6 +23,7 @@ import org.springframework.core.env.Environment;
  */
 
 @PropertySource(value = "classpath:email.properties")  // properties 파일 읽어드리는 annotation | src/main/resources 까지가 classpath: 임, 현재는 폴더 내에 들어가 있지 않으므로 파일명만 기입
+@Component  // UserServiceImpl 에서 가져다 쓸 수 있도록 bean 에 등록
 public class MyJavaMailUtils {
   
   @Autowired       // 필드 직접 주입
@@ -40,7 +42,7 @@ public class MyJavaMailUtils {
     Session session = Session.getInstance(props, new Authenticator() { // (properties, 사용자 정보) | Authenticator : javax.mail 
       @Override
       protected PasswordAuthentication getPasswordAuthentication() {
-        return new PasswordAuthentication(env.getProperty("spring.mail.username"), // 이 부분은 개인 정보 부분으로 별도의 파일(email.properties => properties 파일은 공백 x)로 빼서 github 에서 ignore 처리 해야함!
+        return new PasswordAuthentication(env.getProperty("spring.mail.username"), // 이 부분은 개인 정보 부분으로 별도의 파일(email.properties => properties 파일은 공백 x, 공백도 데이터로 인식함)로 빼서 github 에서 ignore 처리 해야함!
                                           env.getProperty("spring.mail.password"));  
       }
     });

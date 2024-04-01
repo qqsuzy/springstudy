@@ -79,8 +79,7 @@ public class UserController {
   // 이메일 인증 코드 전송
  @PostMapping(value="/sendCode.do", produces="application/json")
   public ResponseEntity<Map<String, Object>> sendCode(@RequestBody Map<String, Object> params) {
-    System.out.println(params);
-    return new ResponseEntity<Map<String,Object>>(HttpStatus.OK);
+    return userService.sendCode(params);
  }
   
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.gdu.myapp.dto.UserDto;
 import com.gdu.myapp.mapper.UserMapper;
+import com.gdu.myapp.utils.MyJavaMailUtils;
 import com.gdu.myapp.utils.MySecurityUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -19,20 +20,22 @@ import lombok.RequiredArgsConstructor;
 // @RequiredArgsConstructor : 생성자 대신에 사용가능한 생성자주입 어노테이션
 @Service
 public class UserServiceImpl implements UserService {
-
+  
   private final UserMapper userMapper;
-
-  public UserServiceImpl(UserMapper userMapper) {
+  private final MyJavaMailUtils myJavaMailUtils;
+  
+  public UserServiceImpl(UserMapper userMapper, MyJavaMailUtils myJavaMailUtils) {
     super();
     this.userMapper = userMapper;
+    this.myJavaMailUtils = myJavaMailUtils;
   }
-  
+
   @Override
   public void signin(HttpServletRequest request, HttpServletResponse response) {
 
     try {
       
-      // 입력한 아이
+      // 입력한 아이디
       String email = request.getParameter("email");
       
       // 입력한 비밀번호 + SHA-256 방식의 암호화
@@ -81,6 +84,22 @@ public class UserServiceImpl implements UserService {
                         && userMapper.getLeaveUserByMap(params) == null;
     return new ResponseEntity<>(Map.of("enableEmail", enableEmail)  // enableEmail 이 signup.jsp의 fetch 로 넘어감 
                               , HttpStatus.OK);                     // ResponseEntity는 생성이후 타입(String,Object) 생략 가능
+  }
+
+  @Override
+  public ResponseEntity<Map<String, Object>> sendCode(Map<String, Object> params) { // Map에 email : 받는 사람 있음
+    
+    // 인증코드 생성
+    String code = MySecurityUtils.getRandomString(6, true, true);   // MySecurityUtils 는 static 처리되어 있어 바로 불러서 사용 가능
+    
+    // 메일 보내기
+    myJavaMailUtils.sendMail((String)params.get("email")
+                           , "myapp 인증요청"
+                           , "<div>인증코드는 <strong>" + code + "</strong>입니다.</div>"); 
+    
+    // 인증코드 입력화면으로 보내주는 값
+    return new ResponseEntity<>(Map.of("code", code)
+                              , HttpStatus.OK);
   }
   
   @Override
