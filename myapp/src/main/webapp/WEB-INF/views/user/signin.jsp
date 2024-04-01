@@ -29,7 +29,7 @@
           action="${contextPath}/user/signin.do">
        <div>
           <label for="email">아이디</label>
-          <input type="text" id="email" name="email" placeholder="example@naver.com">
+          <input type="text" id="email" name="email" placeholder="example@example.com"> <!-- 실제 DB로 보내는 값 : eamil , pw | 데이터 전송 후 돌아올 url 필요하기 떄문에 url 값 or /user/signin.do 도 함께 넘어감 -->
        </div>
        <div>
           <label for="pw">비밀번호</label>

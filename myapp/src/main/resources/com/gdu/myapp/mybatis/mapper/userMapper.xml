@@ -2,6 +2,19 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+
+    java : mapper            mybatis : mapper
+   ―――――――――――――――――――――――――――――――――――――――――――
+   
+      interface   <――――――――        XML
+      method       ――――――――>         id
+                           
+                           namespace : Interface
+
+ --> 
+  
   
 <!-- 호출하는 인터페이스 경로 작성 -->
 <mapper namespace="com.gdu.myapp.mapper.UserMapper"> 
@@ -16,7 +29,7 @@
     SELECT USER_NO, EMAIL, PW, NAME, GENDER, MOBILE, EVENT_AGREE, SIGNUP_KIND, PW_MODIFY_DT, SIGNUP_DT
       FROM USER_T
     <where>
-      <if test="email!=null">EMAIL = #{email}</if>
+      <if test="email!=null">EMAIL = #{email}</if> <!-- 조건 : email과 pw 가 null이 아니면 조회 -->
       <if test="pw!=null">AND PW = #{pw}</if>
     </where> <!-- ********** 조건에 의해서 조건이 바뀐다면 WHERE을 태그로 작성  => WHERE 태그는 필요없는 조건은 빼줌 -->
  </select>
@@ -40,6 +53,16 @@
     )
 
 </insert>
+
+<select id="getLeaveUserByMap"
+        parameterType="map"
+        resultType="LeaveUserDto">
+   SELECT LEAVE_USER_NO
+     FROM LEAVE_USER_T
+   <where>
+     <if test="email!=null">EMAIL = #{email}</if>
+   </where>        
+</select>
 
 <insert id="insertUser"
         parameterType="UserDto">

@@ -18,13 +18,30 @@
 <link rel="stylesheet" href="${contextPath}/resources/summernote-0.8.18-dist/summernote.min.css">
 <script src="${contextPath}/resources/summernote-0.8.18-dist/summernote.min.js"></script>
 <script src="${contextPath}/resources/summernote-0.8.18-dist/lang/summernote-ko-KR.min.js"></script>
+
+<style>
+  @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap')
+
+  * {
+   font-family: "Noto Sans KR", sans-serif;
+   font-weight: 400;
+  }
+  
+</style>
+
 </head>
 <body>
   
+  <!-- Sign In 안 된 경우 -->
   <c:if test="${sessionScope.user == null}"> <!-- session에 있는 user(UserServiceImpl의 signin) -->
-    <a href="${contextPath}/user/signin.page">Sign In</a> <!-- page : 단순페이지 이동 , do : DB 접근 페이지-->
+    <a href="${contextPath}/user/signin.page"><i class="fa-solid fa-arrow-right-to-bracket"></i>Sign In</a> <!-- page : 단순페이지 이동 , do : DB,Service 처리가 있는 페이지-->
+    <a href="${contextPath}/user/signup.page"><i class="fa-solid fa-user-plus"></i>Sign Up</a>
   </c:if>
-  <c:if test="${sessionScope.user != null}">
+  
+  <!-- Sign In 된 경우 -->
+  <!-- 로그인 성공하면 메시지 띄우기 -->
+  <c:if test="${sessionScope.user != null}"> 
     ${sessionScope.user.name}님 반갑습니다
   </c:if>
   
