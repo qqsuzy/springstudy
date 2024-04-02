@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="${contextPath}/resources/summernote-0.8.18-dist/summernote.min.css">
 <script src="${contextPath}/resources/summernote-0.8.18-dist/summernote.min.js"></script>
 <script src="${contextPath}/resources/summernote-0.8.18-dist/lang/summernote-ko-KR.min.js"></script>
+
 </head>
 <body>
   
@@ -38,8 +39,17 @@
        <div>
          <!-- 로그인 버튼 -->
          <input type="hidden" name="url" value="${url}"> <!-- model 로 저장한 값(url)은 view 에서 EL로 확인 가능 => 모델이 저장된 값은 일회용으로 다시 value로 저장해서 signin.do 로 전송  -->
-         <button type="submit">Sing In</button> 
+         <button type="submit">Sign In</button> 
+       </div>
+       <div>
+         <button type="button" id="btn-signout">Sign Out</button>
        </div>   
+       <div>
+        <!-- UserController의 signinPage 메소드 내 model 에 저장된 naverLoginUrl을 EL 태그로 가져옴 -->
+         <a href="${naverLoginURL}">
+          <img src="${contextPath}/resources/2021_Login_with_naver_guidelines_Kr/btnG_아이콘원형.png">
+        </a>
+       </div>
     </form>
   </div>
     

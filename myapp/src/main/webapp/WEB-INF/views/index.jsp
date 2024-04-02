@@ -41,8 +41,10 @@
   
   <!-- Sign In 된 경우 -->
   <!-- 로그인 성공하면 메시지 띄우기 -->
-  <c:if test="${sessionScope.user != null}"> 
+  <c:if test="${sessionScope.user != null}">
     ${sessionScope.user.name}님 반갑습니다
+    <a href="${contextPath}/user/signout.do">로그아웃</a>
+    <a href="${contextPath}/user/leave.do">회원탈퇴</a>
   </c:if>
   
 </body>

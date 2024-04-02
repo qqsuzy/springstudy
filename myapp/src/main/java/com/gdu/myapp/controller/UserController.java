@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +14,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.gdu.myapp.service.UserService;
+
+/*
+ *  순서를 지켜야 하는 "동기처리"
+ *  
+ *  이메일중복체크    -> 요청 (비동기 요청) => promise 가 내장된 fetch 사용하여 응답을 순차적으로 처리함(요청/응답 순서를 지켜야 할 경우 반드시 promise가 필요) 
+ *  가능여부          <- 응답
+ *  해당이메일로전송  -> 요청 (비동기 요청)
+ *  보낸코드          <- 응답
+ *  일치여부 : 허용 여부 판단
+ * 
+ */
+
 
 @RequestMapping("/user")  // user 관련된 메소드는 /user로 시작되도록 mapping 함
 @Controller
@@ -27,34 +38,19 @@ public class UserController {
     this.userService = userService;
   }
   
+  // signin.jsp 로 이동하는 controller
   @GetMapping("/signin.page")
   public String signinPage(HttpServletRequest request
                          , Model model) {  // request 로 부터 필요한 정보를 빼서 model에 저장한 후 페이지를 이동함 (페이지 이동하고자 하는 url을 request로 부터 꺼냄) => model 로 저장한 값은 view 에서 EL로 확인 가능
-                                           // => request 에 HEADER 값이 있는데 "referer" (현재 페이지가 아닌 이전 페이지의 정보를 가지고 있음)
+                                           
     
-    // Sign In 페이지 이전의 주소가 저장되어 있는 Request Header 의 referer
-    String referer = request.getHeader("referer");
+    // Sign In 페이지로 url 넘겨 주기 (로그인 후 이동할 경로를 의미함)
+    model.addAttribute("url",  userService.getRedirectURLAfterSignin(request));
     
-    // referer 로 돌아가면 안 되는 예외 상황 (아이디/비밀번호 찾기 화면, 가입 화면 등) => 쓰면 안되는 URL은 배열로 만들어 둠 
-    String[] excludeUrls = {"/findId.page", "/findPw.page", "/signup.page"}; 
+    // Sign In 페이지로 naverLoginURL 넘겨 주기 (네이버 로그인 요청 주소를 의미함)
+    model.addAttribute("naverLoginURL", userService.getNaverLoginURL(request));
     
-    // Sign In 이후 이동할 url
-    String url = referer;                   // 초기값 referer (아래 코드 : null 여부에 따라 referer 덮어쓰기 됨)
-    if(referer != null) {                   
-      for(String excludeUrl : excludeUrls) {
-        if(referer.contains(excludeUrl)) {  // referer 값이 예외해야 하는 주소와 같다면 메인페이지로 이동
-          url = request.getContextPath() + "/main.page";  // url 관련된 것은 모두 contextPath 앞에 붙여 주어야 함
-          break;
-        }
-      }
-    } else {
-      url = request.getContextPath() + "/main.page";  // referer 값이 없는(null) 경우 : 사이트 접속 후 바로 로그인한 경우 -> 로그인 후 main 페이지로 이동
-    }
-    
-    // Sign In 페이지로 url 넘겨 주기
-    model.addAttribute("url", url);  
-    
-    return "user/signin";    // forward 진행              
+    return "user/signin";
     
   }
   
@@ -64,7 +60,7 @@ public class UserController {
     userService.signin(request, response);
   }
   
-  // 회원가입
+  // 회원가입 페이지 이동
   @GetMapping("/signup.page")
   public String signupPage() {
     return "user/signup";
@@ -81,5 +77,33 @@ public class UserController {
   public ResponseEntity<Map<String, Object>> sendCode(@RequestBody Map<String, Object> params) {
     return userService.sendCode(params);
  }
-  
+ 
+ // 회원가입
+ @PostMapping("/signup.do")
+ public void signup(HttpServletRequest request, HttpServletResponse response) {
+   userService.signup(request, response);
+ }
+ 
+ // 회원탈퇴 (session에 저장된 데이터를 가져오는 방법 3가지)
+ @GetMapping("/leave.do")
+ public void leave(HttpServletRequest request, HttpServletResponse response) {
+   userService.leave(request, response);
+ }
+ 
+ /*
+ @GetMapping("/leave.do") => 파라미터로 Session 받아옴
+ public void leave(HttpSession session, HttpServletResponse response) {
+   UserDto user = (UserDto)session.getAttribute("user");
+ }
+
+ @GetMapping("/leave.do") => @SessionAttribute 사용
+ public void leave(@SessionAttribute(name="user") UserDto user, HttpServletResponse response) { // session에 저장되어 있는 것들 중 user라는 정보를 UserDto로 user라는 이름으로 저장함
+ }
+*/
+ 
+ @PostMapping("/signout.do")
+ public void signout(HttpServletRequest request, HttpServletResponse response) {
+   userService.signout(request, response);
+ }
+ 
 }

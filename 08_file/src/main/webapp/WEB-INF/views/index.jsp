@@ -98,7 +98,7 @@
       formData.append('writer', inputWriter);
       fetch('${contextPath}/upload2.do', {
         method: 'POST',
-        body: formData         // 요청 본문
+        body: formData         // 요청 본문   => formData로 보내면 HttpRequest로 받는다 (이미지 첨부되어 있으면 MutipartHttpRequest)
       }).then(response=>response.json())
         .then(resData=>{  /* resData = {"success": 1} 또는 {"success": 0} */
           if(resData.success === 1){
@@ -125,7 +125,7 @@
             processData: false,
             data: formData,
             dataType: 'json'
-          }).done(resData=>{
+          }).done(resData=>{  
             if(resData.success === 1){
               alert('저장되었습니다.');
             } else {

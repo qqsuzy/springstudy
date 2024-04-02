@@ -4,8 +4,8 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.gdu</groupId>
-  <artifactId>prj10</artifactId> <!-- 프로젝트 이름 -->
-  <name>10_editor</name>
+  <artifactId>myapp</artifactId>
+  <name>myapp</name>
   <packaging>war</packaging>
   <version>1.0.0-BUILD-SNAPSHOT</version>
   
