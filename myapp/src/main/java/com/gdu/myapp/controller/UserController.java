@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.gdu.myapp.dto.UserDto;
 import com.gdu.myapp.service.UserService;
 
 /*
@@ -100,6 +101,38 @@ public class UserController {
  public void leave(@SessionAttribute(name="user") UserDto user, HttpServletResponse response) { // session에 저장되어 있는 것들 중 user라는 정보를 UserDto로 user라는 이름으로 저장함
  }
 */
+ 
+ // 네이버로그인2 : AccessToken 가져와서 전달
+ @GetMapping("naver/getAccessToken.do")
+ public String getAccessToken(HttpServletRequest request) {
+   String accessToken = userService.getNaverLoginAccessToken(request);
+   // 새로운 요청 (accessToken을 naver로 전달) 을 위해서 redirect 필요 (3번째 요청)
+   return "redirect:/user/naver/getProfile.do?accessToken=" + accessToken; // redirect 로 요청함(redirect 뒤에는 mapping 적기) =>  파라미터(요청변수) 값은 임의로 정해도 됨! 
+ }
+ 
+ @GetMapping("/naver/getProfile.do")
+ public String getProfile(HttpServletRequest request, Model model) { // jsp 로 값 전달하기 위해 model 추가
+   
+   // 네이버로부터 받은 프로필 정보
+   UserDto naverUser = userService.getNaverLoginProfile(request.getParameter("accessToken"));
+
+   // 반환 경로
+   String path = null;
+   
+   // 프로필이 DB에 있는지 확인 (있으면 Sign In, 없으면 Sign Up) => 프로필 유무에 따라 path 결정됨
+   if(userService.hasUser(naverUser)) {
+     // Sign In (로그인) => service 필요, 기존에 signin은 email, pw 가 필요하기 때문에 별도의 naverSignIn이 필요함 => 
+     userService.naverSignin(request, naverUser);
+     path ="redirect:/main.page";
+   } else {
+     // Sign Up (네이버 가입 화면으로 이동)
+     model.addAttribute("naverUser", naverUser); // naverUser + 입력 받은 password 를 가지고 DB로 이동해야함 (password 값만 가지고 넘어가면 DB 에서는 어떤 사용자인지 모르기 때문)
+     path = "user/naver_signup"; // jsp 사용하지 않으므로 .do , .page 쓰지 않음 
+     
+   }
+   return path;
+ }
+ 
  
  @PostMapping("/signout.do")
  public void signout(HttpServletRequest request, HttpServletResponse response) {

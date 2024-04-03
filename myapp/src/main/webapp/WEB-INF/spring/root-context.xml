@@ -50,11 +50,6 @@
         scope="singleton">
     <constructor-arg ref="sqlSessionFactoryBean"/>
   </bean>
- 
- <bean class="org.mybatis.spring.mapper.MapperFactoryBean">
-   <property name="mapperInterface" value="com.gdu.myapp.mapper.UserMapper"/> <!-- java가 인터페이스를 써서 xml을 호출(xml을 직접 사용할 수 없기 때문) -->
-   <property name="sqlSessionFactory" ref="sqlSessionFactoryBean"/>
- </bean>
   
    <!-- 트랜잭션 관리자 등록 -->
   <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager"

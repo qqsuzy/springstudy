@@ -1,7 +1,11 @@
 package com.gdu.myapp.service;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.SecureRandom;
 import java.util.Map;
 
@@ -9,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -206,6 +211,7 @@ public class UserServiceImpl implements UserService {
     /************* 네이버 로그인 1 *************/
     // 네이버 로그인 요청 주소를 만들어서 반환하는 메소드
     String redirectUri = "http://localhost:8080" + request.getContextPath() + "/user/naver/getAccessToken.do";
+    // state : 나만 만들어 낼 수 있는 값 (SecureRandom 로 랜덤으로 생성됨)
     String state = new BigInteger(130, new SecureRandom()).toString();   // 네이버 개발자센터에서 제공하는 state 생성 방법 (고정 코드)
     
     StringBuilder builder = new StringBuilder();
@@ -213,12 +219,164 @@ public class UserServiceImpl implements UserService {
     builder.append("?response_type=code");
     builder.append("&client_id=6oAUlmBdK_Zz1iN3Jr8v");
     builder.append("&redirect_uri=" + redirectUri);
-    builder.append("&state=" + state);
+    builder.append("&state=" + state);  
     
     return builder.toString();
 
   }
+  
+  // 받은 Access Token 를 Controller 로 보내기
+  @Override 
+  public String getNaverLoginAccessToken(HttpServletRequest request) {
+    /************* 네이버 로그인 2 *************/
+    // 네이버로부터 Access Token 을 발급 받아 반환하는 메소드
+    // 네이버 로그인 1단계에서 전달한 redirect_uri 에서 동작하는 서비스
+    // code 와 state 파라미터를 받아서 Access Token 을 발급 받을 때 사용
+    
+    String code  = request.getParameter("code"); // 파라미터로 받아서 다시 naver로 전송
+    String state = request.getParameter("state");
+    
+    String spec = "https://nid.naver.com/oauth2.0/token";
+    String grantType = "authorization_code";
+    String clientId = "6oAUlmBdK_Zz1iN3Jr8v";
+    String clientSecret = "I2Fraf4CwZ";
+    
+    StringBuilder builder = new StringBuilder();
+    builder.append(spec);
+    builder.append("?grant_type=" + grantType);
+    builder.append("&client_id=" + clientId);
+    builder.append("&client_secret=" + clientSecret);
+    builder.append("&code=" + code);
+    builder.append("&state=" + state);
 
+    // javastudy -> 13_network -> pkg02_open_api 참고
+    
+    // 선언부
+    HttpURLConnection con = null; // try 밖으로 뺀 이유? 닫는 것을 try-catch 밖에서 진행하기 위함
+    JSONObject obj = null;
+    try {
+      
+      // 요청
+      URL url = new URL(builder.toString());
+      con = (HttpURLConnection) url.openConnection(); // 자식타입으로 다운 캐스팅
+      con.setRequestMethod("GET"); // 반드시 대문자로 작성해야 한다.
+      
+      // 응답 스트림 생성
+      BufferedReader reader = null;
+      int responseCode = con.getResponseCode(); //  OK : 200
+      if(responseCode == HttpURLConnection.HTTP_OK) {
+        reader = new BufferedReader(new InputStreamReader(con.getInputStream())); // 입력스트림으로 naver로 부터 데이터 받아옴 -> 입력스트림은 byte 기반 -> 그러나 우리는 char 로 받아와야 함
+      } else {                                                                    // byte(InputStream) -> char(InputStreamReader) -> buffer(BufferedReader) (버퍼를 껴서 속도 ↑)
+        reader = new BufferedReader(new InputStreamReader(con.getErrorStream())); // 정상 스트림은 console 로 글자색 검정으로 출력 , 에러 스트림은 글자색 빨강으로 출력됨
+      }
+      
+      // 응답 데이터 받기
+      String line = null;
+      StringBuilder responseBody = new StringBuilder();
+      while((line = reader.readLine()) != null) { // readLine은 모든 값을 읽으면 null 값 반환 => null 값이 아닐 때 까지 읽어드림 (= 끝까지 읽어드림)
+        responseBody.append(line);
+      }
+
+      // 응답 데이터 JSON 객체로 변환하기
+      obj = new JSONObject(responseBody.toString());
+      
+      // 응답 스트림 닫기
+      reader.close();
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    con.disconnect();
+    
+    return obj.getString("access_token"); 
+    
+  }
+  
+  @Override
+  public UserDto getNaverLoginProfile(String accessToken) {
+    /************* 네이버 로그인 3 *************/
+    // 네이버로부터 프로필 정보(이메일, [이름, 성별, 휴대전화] 을 발급 받아 반환하는 메소드
+    // 네이버 로그인 1단계에서 전달한 redirect_uri 에서 동작하는 서비스
+    // code 와 state 파라미터를 받아서 Access Token 을 발급 받을 때 사용
+    
+    /* 로그인 방법은 1) 네이버 로그인만 가능하도록 구현하는 방법, 2) 간편가입으로 추가로 비밀번호 + 회원정보를 받아서 네이버 로그인 + 직접 로그인 하는 방법 2가지로 구현 가능함 
+     * => 비밀번호가 없는 상태로 구현할 경우 마이페이지에 들어갈 때 비밀번호를 요구하는데 로직이 피곤해짐..! -> 간편가입 기능을 추가하는 것을 권장
+     */
+    
+    String spec = "https://openapi.naver.com/v1/nid/me";
+    HttpURLConnection con = null;
+    UserDto user = null;
+    
+    try {
+    
+      // 요청
+      URL url = new URL(spec);
+      con = (HttpURLConnection) url.openConnection();
+      con.setRequestMethod("GET");
+      
+      // 요청 헤더
+      con.setRequestProperty("Authorization", "Bearer " + accessToken); // setRequestProperty(헤더이름, 값) : 요청헤더를 만들어주는 메소드 
+      
+      // 응답 스트림 생성
+      BufferedReader reader = null;
+      int responseCode = con.getResponseCode(); //  OK : 200
+      if(responseCode == HttpURLConnection.HTTP_OK) {
+        reader = new BufferedReader(new InputStreamReader(con.getInputStream())); // 입력스트림으로 naver로 부터 데이터 받아옴 -> 입력스트림은 byte 기반 -> 그러나 우리는 char 로 받아와야 함
+      } else {                                                                    // byte(InputStream) -> char(InputStreamReader) -> buffer(BufferedReader) (버퍼를 껴서 속도 ↑)
+        reader = new BufferedReader(new InputStreamReader(con.getErrorStream())); // 정상 스트림은 console 로 글자색 검정으로 출력 , 에러 스트림은 글자색 빨강으로 출력됨
+      }
+      
+      // 응답 데이터 받기
+      String line = null;
+      StringBuilder responseBody = new StringBuilder();
+      while((line = reader.readLine()) != null) { // readLine은 모든 값을 읽으면 null 값 반환 => null 값이 아닐 때 까지 읽어드림 (= 끝까지 읽어드림)
+        responseBody.append(line);
+      }
+
+      // 응답 데이터 JSON 객체로 변환하기
+      JSONObject obj = new JSONObject(responseBody.toString());
+      JSONObject response = obj.getJSONObject("response");
+      user = UserDto.builder()
+                  .email(response.getString("email"))
+                  .gender(response.has("gender") ? response.getString("gender") : null)
+                  .name(response.has("name") ? response.getString("name") : null)
+                  .mobile(response.has("mobile") ? response.getString("mobile") : null)
+                 .build();
+      // if(response.has("name")) user.setName(response.getString("name")); builder 에서 빼서 if 문에 넣는 것도 가능
+      
+      // 응답 스트림 닫기
+      reader.close();
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    con.disconnect();
+    
+    return user;
+  }
+  
+  @Override
+  public boolean hasUser(UserDto user) {
+    // service는 mapper 호출 하는데 UserMapper 내에 getUserByMap 전달
+    return userMapper.getUserByMap(Map.of("email", user.getEmail())) != null; // null 이 아니면 true 반환 -> 즉, 사용자 존재한다는 의미임
+  }
+  
+  // 네이버 로그인
+  @Override
+  public void naverSignin(HttpServletRequest request, UserDto naverUser) {
+    
+    Map<String, Object> map = Map.of("email", naverUser.getEmail(),
+                                      "ip", request.getRemoteAddr());
+    
+    UserDto user = userMapper.getUserByMap(map);
+    // 회원 정보를 세션(브라우저 닫기 전까지 정보가 유지되는 공간, 기본 30분 정보 유지)에 보관하기  => 다른 페이지들을 돌아다녀도 로그인 정보를 보관
+    request.getSession().setAttribute("user", user);
+    userMapper.insertAccessHistory(map);  // map에 담긴 사용자 정보를 userMapper 에 AccessHistory 저장 시킴
+    
+  }
+  
   @Override
   public void signin(HttpServletRequest request, HttpServletResponse response) {
 

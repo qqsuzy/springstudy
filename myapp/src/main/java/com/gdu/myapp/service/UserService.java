@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseEntity;
 
+import com.gdu.myapp.dto.UserDto;
+
 // 구현 순서대로 메소드 작성됨
 public interface UserService {
   
@@ -18,8 +20,14 @@ public interface UserService {
 
   // 로그인 및 로그아웃
   String getRedirectURLAfterSignin(HttpServletRequest request);
-  String getNaverLoginURL(HttpServletRequest request);
   void signin(HttpServletRequest request, HttpServletResponse response);     // 로그인
   void signout(HttpServletRequest request, HttpServletResponse response);    // 로그아웃
-     
+
+  // 네이버 로그인
+  String getNaverLoginURL(HttpServletRequest request);                                            // 네이버 로그인 작업1 (요청 주소 반환)
+  String getNaverLoginAccessToken(HttpServletRequest request);                                    // 네이버 로그인 작업2 (Access Token 반환)
+  UserDto getNaverLoginProfile(String accessToken);                                               // 네이버 로그인 작업3 (프로필 정보 반환)
+  boolean hasUser(UserDto user);                                                                  // 프로필이 DB에 있는지 체크 => 사용자 정보(user) 넘겨 받아서 체크함
+  void naverSignin(HttpServletRequest request, UserDto naverUser);  // 네이버 로그인
+  
 }

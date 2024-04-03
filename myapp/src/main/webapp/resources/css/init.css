@@ -1,0 +1,30 @@
+@charset "UTF-8";
+
+  @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+
+  /*  폰트 적용할 때 * 사용하기 보다는 div, span, ... 로 적용 권장 (*로 하면 모든 요소에 다 적용되기 때문) */
+  * { 
+   font-family: "Noto Sans KR", sans-serif;
+   font-weight: 400;
+   color : #333333;
+   padding: 0;
+   margin: 0;
+  }
+  
+  body, div, ul, li, ol, dl, dt, dd {
+    box-sizing: border-box;    
+  }
+  
+  a {
+   text-decoration: none;
+   color: #333333;
+  }
+  
+  i {
+   color: #333333; 
+  }
+  
+  ul, ol {
+   list-style-type: none;
+  }
