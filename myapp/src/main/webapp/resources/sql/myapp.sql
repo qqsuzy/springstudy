@@ -32,8 +32,10 @@ CREATE TABLE ACCESS_HISTORY_T (
   ACCESS_HISTORY_NO NUMBER             NOT NULL,
   EMAIL             VARCHAR2(100 BYTE),
   IP                VARCHAR2(50 BYTE),
+  USER_AGENT        VARCHAR2(150 BYTE),  -- 접속 경로
+  SESSION_ID        VARCHAR2(32 BYTE),   
   SIGNIN_DT         DATE,
-  SIGNOUT_DT        DATE,    -- 기록이 잘 남지 않음, 사용자가 직접 로그아웃을 눌러야 기록이 남음 -> NULL 값이 대부분임 
+  SIGNOUT_DT        DATE,                -- 기록이 잘 남지 않음, 사용자가 직접 로그아웃을 눌러야 기록이 남음 -> NULL 값이 대부분임 
   CONSTRAINT PK_ACCESS_HISTORY PRIMARY KEY(ACCESS_HISTORY_NO),
   CONSTRAINT FK_ACCESS_HISTORY_USER
     FOREIGN KEY(EMAIL) 
@@ -82,6 +84,12 @@ CREATE TABLE BLOG_T (
         ON DELETE CASCADE  -- 사용자 탈퇴 시 작성된 정보들 모두 지움
 );
 */
+
+-- 기본 데이터 (사용자)
+INSERT INTO USER_T VALUES (USER_SEQ.NEXTVAL, 'admin@example.com', STANDARD_HASH('admin','SHA256'), '관리자', 'man', '010-1111-1111', 1, 0, CURRENT_DATE, CURRENT_DATE);
+COMMIT;
+
+
 
 /******************************** 트리거 ********************************/
 /*

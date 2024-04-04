@@ -23,4 +23,21 @@
 	
 	<context:component-scan base-package="com.gdu.myapp" />
 	
+  <!-- 인터셉터 등록 -->
+   <interceptors>
+    <!-- 작성페이지로 갈 때 인터셉터 동작 -->
+    <interceptor>
+      <mapping path="/bbs/write.page" />
+      <beans:bean class="com.gdu.myapp.interceptor.RequiredSigninInterceptor" /> <!-- <beans:bean> : servlet-context에서 bean 만드는 방법 -->
+    </interceptor>
+    
+    <!-- 로그인 상태에서 로그인 하려고 할 때 인터셉터 동작-->
+    <interceptor>
+      <mapping path="/user/signin.page"/>
+      <mapping path="/user/signup.page"/>
+      <beans:bean class="com.gdu.myapp.interceptor.RequiredSignoutInterceptor"/>    
+    </interceptor>
+
+  </interceptors>
+
 </beans:beans>

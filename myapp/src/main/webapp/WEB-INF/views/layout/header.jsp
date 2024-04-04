@@ -14,8 +14,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- 페이지마다 다른 제목 -->
+ <!-- empty : 파라미터로 받은게 없다 (EL 연산자 => jspstudy/02_jsp/src/main/webapp/pkg04_EL 참고!) -->
 <title>
-  <!-- empty : 파라미터로 받은게 없다 (EL 연산자 => jspstudy/02_jsp/src/main/webapp/pkg04_EL 참고!) -->
   <c:choose>
     <c:when test="${empty param.title}">Welcome</c:when>
     <c:otherwise>${param.title}</c:otherwise>
@@ -60,8 +60,8 @@
     <!-- 네비게이션 -->
     <div class="gnb-wrap">
       <ul class="gnb">
-        <li><a href="${contextPath}/bbs/list.do">댓글형게시판</a></li>
-        <li><a href="${contextPath}/">계층형게시판</a></li>
+        <li><a href="${contextPath}/bbs/list.do">계층형게시판</a></li>
+        <li><a href="${contextPath}/">댓글형게시판</a></li>
         <li><a href="${contextPath}/">첨부형게시판</a></li>
         <li><a href="${contextPath}/">마이페이지</a></li>
       </ul>
