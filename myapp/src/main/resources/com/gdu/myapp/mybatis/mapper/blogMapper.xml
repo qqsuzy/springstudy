@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+
+    java : mapper            mybatis : mapper
+   ―――――――――――――――――――――――――――――――――――――――――――
+   
+      interface   <――――――――        XML
+      method       ――――――――>       id
+                           
+                           namespace : Interface
+
+ --> 
+  
+  
+<!-- 호출하는 인터페이스 경로 작성 -->
+<mapper namespace="com.gdu.myapp.mapper.BlogMapper"> 
+ 
+ 
+ </mapper>

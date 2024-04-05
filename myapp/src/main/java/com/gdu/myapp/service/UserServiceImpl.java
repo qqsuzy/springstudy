@@ -391,23 +391,34 @@ public class UserServiceImpl implements UserService {
       // 접속 IP (접속 기록을 남길 때 필요한 정보)
       String ip = request.getRemoteAddr();
       
+      // 접속 수단 (요청 헤더의 User-Agent) 값
+      String userAgent = request.getHeader("User-Agent");
+      
       // DB로 보낼 정보 (email/pw: USER_T , email/ip: ACCESS_HISTORY_T) | select , insert 할 때 쓰는 map
       Map<String, Object> params = Map.of("email", email
                                         , "pw", pw
-                                        , "ip", ip);  
+                                        , "ip", request.getRemoteAddr()
+                                        , "userAgent", request.getHeader("User-Agent")  // 접속 경로 (chrome, java ...)
+                                        , "sessionId", request.getSession().getId());   // SessionId
       
       // email/pw 가 일치하는 회원 정보 가져오기
       UserDto user = userMapper.getUserByMap(params);
       
       // 일치하는 회원 있음 (Sign In 성공)
       if(user != null) {  // 로그인의 기본 session(bind 영역) 에 올려야 함
+        
         // 접속 기록 ACCESS_HISTORY_T 에 남기기 (로그인 성공시 히스토리 남김)
         userMapper.insertAccessHistory(params); 
+        
         // 회원 정보를 세션(브라우저 닫기 전까지 정보가 유지되는 공간, 기본 30분 정보 유지)에 보관하기  => 다른 페이지들을 돌아다녀도 로그인 정보를 보관 
+        HttpSession session = request.getSession();
         request.getSession().setAttribute("user", user); 
+        session.setMaxInactiveInterval(10); // 세션 유지 시간 10초 설정 (디폴트 값 : 60 * 30 => 30분)
+        
         // Sign In 후 페이지 이동 (url로 이동)
         response.sendRedirect(request.getParameter("url"));
-      // 일치하는 회원 없음 (Sign In 실패)  
+      // 일치하는 회원 없음 (Sign In 실패)
+        
       } else {
         response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
@@ -427,8 +438,25 @@ public class UserServiceImpl implements UserService {
   
   @Override
   public void signout(HttpServletRequest request, HttpServletResponse response) {
-    // TODO Auto-generated method stub
-
+    
+try {
+      
+      // Sign Out 기록 남기기
+      HttpSession session = request.getSession();
+      String sessionId = session.getId(); 
+      userMapper.updateAccessHistory(sessionId);
+      
+      // 세션에 저장된 모든 정보 초기화  => 기록을 먼저 남긴 후 초기화 시켜야함!
+      session.invalidate();
+      
+      // 메인 페이지로 이동
+      response.sendRedirect(request.getContextPath() + "/main.page");
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    
   }
  
 }

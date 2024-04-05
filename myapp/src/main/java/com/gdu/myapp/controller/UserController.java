@@ -134,7 +134,7 @@ public class UserController {
  }
  
  
- @PostMapping("/signout.do")
+ @GetMapping("/signout.do")
  public void signout(HttpServletRequest request, HttpServletResponse response) {
    userService.signout(request, response);
  }

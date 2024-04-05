@@ -24,7 +24,7 @@ public class BbsController {
   @GetMapping("/list.do")
   public String list(HttpServletRequest request, Model model) {
     bbsService.loadBbsList(request, model);
-    return "bbs/list";
+    return "bbs/list";   // list.jsp 로 이동
   }
   
   @GetMapping("/write.page")
@@ -50,6 +50,12 @@ public class BbsController {
   public String removeBbs(@RequestParam int bbsNo, RedirectAttributes redirectAttributes) { // 삭제 이후에도 redirect 필요
    redirectAttributes.addFlashAttribute("removeBbsCount", bbsService.removeBbs(bbsNo));
     return "redirect:/bbs/list.do"; 
+  }
+  
+  @GetMapping("/search.do")
+  public String serach(HttpServletRequest request, Model model) {
+    bbsService.loadBbsSearchList(request, model);
+    return "bbs/list";
   }
   
 }

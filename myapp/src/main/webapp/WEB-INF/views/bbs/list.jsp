@@ -18,6 +18,23 @@
 
 <a href="${contextPath}/bbs/write.page">작성하러가기</a>
 
+<div>
+  <!-- 검색기능 : 검색은 GET 방식 
+       전달되는 파라미터 : column(EMAIL/CONTENTS) , query => option의 value가 대문자인 이유? -> DB에 변수처럼 심기 위해서!
+  -->
+  <form method="GET"
+        action="${contextPath}/bbs/search.do">
+    <div>
+      <select name="column">
+        <option value="U.EMAIL">작성자</option>  <!-- U.EMAIL : USER_T 에 존재   => 검색 결과 개수 구할 때 JOIN 필요함 -->
+        <option value="B.CONTENTS">내용</option> <!-- B.CONTENTS : BBS_T 에 존재                                       -->
+      </select>
+      <input type="text" name="query" placeholder="검색어 입력">
+      <button type="submit">검색</button>
+    </div>      
+  </form>
+</div>
+
 <table border="1">
   <thead>
     <tr>

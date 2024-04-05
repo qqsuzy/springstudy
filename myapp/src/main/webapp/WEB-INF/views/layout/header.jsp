@@ -61,11 +61,32 @@
     <div class="gnb-wrap">
       <ul class="gnb">
         <li><a href="${contextPath}/bbs/list.do">계층형게시판</a></li>
-        <li><a href="${contextPath}/">댓글형게시판</a></li>
+        <li><a href="${contextPath}/blog/list.do">댓글형게시판</a></li>
         <li><a href="${contextPath}/">첨부형게시판</a></li>
-        <li><a href="${contextPath}/">마이페이지</a></li>
       </ul>
     </div>
+    <!-- 
+    
+     JSP 의 내장객체
+     - 총 9개의 내장객체가 있으며, 선언 없이 바로 사용 가능함
+     
+     1. SESSION
+       1) session 의 시작 => 작업이 시작되었음을 의미함
+       2) 페이지 열림 -> 로그인 완료 : 세션 유지          => 로그인 ~ 로그아웃 사이는 동일한 session -> 로그인 한 사용자만 사용할 수 있는 session
+       3) 로그아웃 완료  : 세션 만료(sessionId 변함)  => session.invalidate() 초기화 코드로 인해 변하는 것
+       4) 세션 만료  : session.invalidate(), 세션유지 시간이 지났을 때(30분) => 세션만료 시간은 spring이 알 수 있음(HttpSessionListener 인터페이스 : 세션 생성되었을 때, 세션 만료되었을 때 메소드 구현 가능)
+     
+     2. SESSION ID
+      1) SIGNOUT_DT 는 email 기준이 아닌 SESSION_ID 를 기준으로 세션 UPDATE 를 진행해야함
+         email을 기준으로 업데이트를 진행하게 되면 로그인, 로그아웃 기록이 동일 아이디로 여러 건 찍힘
+        세션 ID를 부여하여 해당 ID 를 기준으로 기록이 UPDATE 되도록 함
+        => 예전에는 세션 ID 를 기준으로 자동로그인 구현을 하였음, 현재는 보안상 문제로 인해 사용하지 않음 (사용자는 쿠키에 브라우저 기록을 저장하게 되는데 쿠키는 보안에 매우 취약하기 때문) 
+     
+         
+      동일한 세션유지 : 브라우저 닫을 때 까지
+     
+     -->
+    <div>현재 sessionId : <%=session.getId()%></div>
     
   </div>
   <!-- 닫는 태그 없이 작업 --> 

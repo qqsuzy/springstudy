@@ -34,26 +34,6 @@
     </where> <!-- ********** 조건에 의해서 조건이 바뀐다면 WHERE을 태그로 작성  => WHERE 태그는 필요없는 조건은 빼줌 -->
  </select>
 
-
-
-<insert id="insertAccessHistory"
-        parameterType="Map">
-    INSERT INTO ACCESS_HISTORY_T (
-       ACCESS_HISTORY_NO
-     , EMAIL
-     , IP
-     , SIGNIN_DT
-     , SIGNOUT_DT               <!-- SIGNOUT_DT 는 UPDATE로 갱신 -->
-    ) VALUES (
-      ACCESS_HISTORY_SEQ.NEXTVAL
-     , #{email}
-     , #{ip}
-     , CURRENT_DATE
-     , NULL
-    )
-
-</insert>
-
 <select id="getLeaveUserByMap"
         parameterType="map"
         resultType="LeaveUserDto">
@@ -85,7 +65,7 @@
       , #{gender}
       , #{mobile}
       , #{eventAgree}
-      , 0                <!-- 직접가입 -->           
+      , 0                <!-- 직접가입 -->
       , CURRENT_DATE
       , CURRENT_DATE
     )
@@ -96,5 +76,32 @@
     FROM USER_T
    WHERE USER_NO = #{userNo}
 </delete>
+
+<insert id="insertAccessHistory"
+        parameterType="Map">
+    INSERT INTO ACCESS_HISTORY_T (
+        ACCESS_HISTORY_NO
+      , EMAIL
+      , IP
+      , USER_AGENT
+      , SESSION_ID
+      , SIGNIN_DT
+      , SIGNOUT_DT                 <!-- SIGNOUT_DT 는 UPDATE로 갱신 -->
+    ) VALUES (
+        ACCESS_HISTORY_SEQ.NEXTVAL
+      , #{email}
+      , #{ip}
+      , #{userAgent}
+      , #{sessionId}
+      , CURRENT_DATE
+      , NULL
+    )    
+</insert>
+
+ <update id="updateAccessHistory">
+    UPDATE ACCESS_HISTORY_T
+       SET SIGNOUT_DT = CURRENT_DATE
+     WHERE SESSION_ID = #{sessionId} 
+  </update>
 
  </mapper>

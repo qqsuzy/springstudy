@@ -25,5 +25,6 @@ public interface UserMapper {
   LeaveUserDto getLeaveUserByMap(Map<String, Object> map);
   int insertUser(UserDto user);
   int deleteUser(int userNo);
+  int updateAccessHistory(String sessionId);
   
 }

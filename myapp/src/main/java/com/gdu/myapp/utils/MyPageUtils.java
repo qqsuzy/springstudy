@@ -130,5 +130,46 @@ public class MyPageUtils {
 
      return builder.toString();
    }
+   
+   // 검색 페이징 
+   public String getPaging(String requestURI, String sort, int display, String params) {  // params : 검색 조건 파라미터 (column=xx&query=yy   -> service에서 문자열로 만들어서 params로 넘김) 
+     
+     /*
+      *  /bbs/search.do?page=2&sort=&display=20
+      *  
+      *  <검색 페이징 유의점>
+      *  column 과 query 가 주소 내에 포함되지 않으면 검색 페이징(1페이지-> 2페이지) 넘길 때 검색 결과가 풀려버림
+      *  -> 이에 반드시 column 과 query 가 주소 내에 포함될 수 있도록 파라미터에 포함시켜야 검색 풀리지 않음!
+      */
+     
+     StringBuilder builder = new StringBuilder();
+     
+     // <
+     if(beginPage == 1) {
+       builder.append("<div class=\"dont-click\">&lt;</div>");
+     } else {
+       builder.append("<div><a href=\"" + requestURI + "?page=" + (beginPage - 1) + "&sort=" + sort + "&display=" + display + "&"+ params +"\">&lt;</a></div>");
+     }
+     
+     // 1 2 3 4 5 6 7 8 9 10
+     for(int p = beginPage; p <= endPage; p++) {
+       if(p == page) {
+         builder.append("<div><a class=\"current-page\" href=\"" + requestURI + "?page=" + p + "&sort=" + sort + "&display=" + display + "&"+ params +"\">" + p + "</a></div>");
+       } else {
+         builder.append("<div><a href=\"" + requestURI + "?page=" + p + "&sort=" + sort + "&display=" + display + "&"+ params +"\">" + p + "</a></div>");
+       }
+     }
+     
+     // >
+     if(endPage == totalPage) {
+       builder.append("<div class=\"dont-click\">&gt;</div>");
+     } else {
+       builder.append("<div><a href=\"" + requestURI + "?page=" + (endPage + 1) + "&sort=" + sort + "&display=" + display + "&"+ params +"\">&gt;</a></div>");
+     }
+     
+     return builder.toString();
+     
+   }
+   
   
 }

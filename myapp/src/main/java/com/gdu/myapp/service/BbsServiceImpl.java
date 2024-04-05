@@ -1,5 +1,6 @@
 package com.gdu.myapp.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -133,8 +134,45 @@ public class BbsServiceImpl implements BbsService {
   // 검색
   @Override
   public void loadBbsSearchList(HttpServletRequest request, Model model) {
-    // TODO Auto-generated method stub
+    
+    // 요청 파라미터
+    String column = request.getParameter("column");
+    String query = request.getParameter("query");
 
+    // 검색 데이터 개수를 구할 때 사용할 Map 생성
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("column", column);
+    map.put("query", query);
+    
+    // 검색 데이터 개수 구하기
+    int total = bbsMapper.getSearchCount(map);
+    
+    // 한 페이지에 표시할 검색 데이터 개수
+    int display = 20;
+    
+    // 현재 페이지 번호
+    Optional<String> opt = Optional.ofNullable(request.getParameter("page"));
+    int page = Integer.parseInt(opt.orElse("1"));
+    
+    // 페이지 처리에 필요한 처리
+    myPageUtils.setPaging(total, display, page);
+    
+    // 검색 목록을 가져오기 위해서 기존 Map 에 begin 과 end 를 추가
+    map.put("begin", myPageUtils.getBegin());
+    map.put("end", myPageUtils.getEnd());          // 여기까지 map에 총 4개의 데이터 저장되어 있음 (column, query, begin, end)
+  
+    // 검색 목록 가져오기                               
+    List<BbsDto> bbsList = bbsMapper.getSearchList(map);                     
+
+    // 뷰로 전달할 데이터
+    model.addAttribute("beginNo", total - (page - 1) * display);
+    model.addAttribute("bbsList", bbsList);
+    // 메소드 오버로딩(파라미터는 달라야함, 같으면 x)으로 상황에 맞게 여러개의 메소드를 생성(같은 이름의 메소드)해서 사용하여도 됨 => getPaging을 메소드 오버로딩으로 구현 (MyPageUtils 내 구현됨)
+    model.addAttribute("paging", myPageUtils.getPaging(request.getContextPath() + "/bbs/search.do"
+                                                     , "" 
+                                                     , 20
+                                                     , "column=" + column + "&query" + query)); // 검색 페이지를 전달해야함 
+    
   }
 
 }
