@@ -19,6 +19,14 @@
   </properties>
   
   <dependencies>
+
+    <!-- Java HTML Parser -->    
+    <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.15.4</version>
+    </dependency>
     
     <!-- JSON in Java -->
     <!-- https://mvnrepository.com/artifact/org.json/json -->

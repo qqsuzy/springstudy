@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class UserDto {
-  private int userNo, eventAgree, singupKind;
+  private int userNo, eventAgree, signupKind;
   private String email, pw, name, gender, mobile;
   private Date pwModifyDt, signupDt;
 }

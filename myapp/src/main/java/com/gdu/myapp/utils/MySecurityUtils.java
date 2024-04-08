@@ -39,7 +39,7 @@ public class MySecurityUtils {
   
   // 크로스 사이트 스크립팅 (Cross Site Scripting) 방지 
   public static String getPreventXss(String original) {
-    return original.replace("<", "&lt;").replace(">", "&gt;"); // < 가 들어오면 &lt로 바꾸어주고, > 가 들어오면 &gt로 바꾸어줌 (replace는 메소드 체이닝 가능)
+    return original.replace("<script>", "&lt;script&gt;").replace("</script>", "&lt;/script&gt;"); // < 가 들어오면 &lt로 바꾸어주고, > 가 들어오면 &gt로 바꾸어줌 (replace는 메소드 체이닝 가능)
   }
   
   /*

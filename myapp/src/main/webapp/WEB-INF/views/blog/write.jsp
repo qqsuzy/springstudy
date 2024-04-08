@@ -37,7 +37,7 @@
     <!-- submit 할 때 전달될 정보 2 : userNo --> 
     <input type="hidden" name="userNo" value="${sessionScope.user.userNo}">
     <button type="submit">작성완료</button>
-    <a href="${contextPath}/blog/list.do"><button type="button">작성취소</button></a>
+    <a href="${contextPath}/blog/list.page"><button type="button">작성취소</button></a>
   </div>
 </form>
 

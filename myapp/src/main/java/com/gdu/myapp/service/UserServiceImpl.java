@@ -413,7 +413,7 @@ public class UserServiceImpl implements UserService {
         // 회원 정보를 세션(브라우저 닫기 전까지 정보가 유지되는 공간, 기본 30분 정보 유지)에 보관하기  => 다른 페이지들을 돌아다녀도 로그인 정보를 보관 
         HttpSession session = request.getSession();
         request.getSession().setAttribute("user", user); 
-        session.setMaxInactiveInterval(10); // 세션 유지 시간 10초 설정 (디폴트 값 : 60 * 30 => 30분)
+        session.setMaxInactiveInterval(10 * 60); // 세션 유지 시간 10초 설정 (디폴트 값 : 60 * 30 => 30분)
         
         // Sign In 후 페이지 이동 (url로 이동)
         response.sendRedirect(request.getParameter("url"));

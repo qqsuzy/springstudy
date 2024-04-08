@@ -6,7 +6,7 @@
   <!-- Console view 에 로그를 찍는 Appender -->
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-      <layout class="com.jdu.myapp.logback.MyLogbackLayout"/>
+      <layout class="com.gdu.myapp.logback.MyLogbackLayout"/>
     </encoder>
   </appender>
   
@@ -16,7 +16,7 @@
     <append>true</append>
     <immediateFlush>true</immediateFlush>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-      <layout class="com.jdu.myapp.logback.MyLogbackLayout"/>
+      <layout class="com.gdu.myapp.logback.MyLogbackLayout"/>
     </encoder>
   </appender>
   
@@ -29,7 +29,7 @@
       <maxHistory>30</maxHistory>
     </rollingPolicy>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-      <layout class="com.jdu.myapp.logback.MyLogbackLayout"/>
+      <layout class="com.gdu.myapp.logback.MyLogbackLayout"/>
     </encoder>
   </appender>
 	
