@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -54,6 +55,12 @@ public class BlogController {
     return blogService.getBlogList(request);
   }
   
+  @GetMapping("/updateHit.do")
+  public String updateHit(@RequestParam int blogNo) {
+    blogService.updateHit(blogNo);
+    return "redirect:/blog/detail.do?blogNo=" + blogNo;   // 조회수 증가 후 상세보기 페이지로 이동 (상세보기할 때는 blogNo를 함께 넘겨주어야 함) 
+  }
+  
   // 상세보기
   @GetMapping("/detail.do") // location 이동
   public String detail(@RequestParam int blogNo, Model model) {
@@ -63,9 +70,23 @@ public class BlogController {
   
   @PostMapping(value="/registerComment.do", produces="application/json")
   public ResponseEntity<Map<String, Object>> registerComment(HttpServletRequest request) {
-    System.out.println(request.getParameter("contents"));
-    System.out.println(request.getParameter("blogNo"));
-    System.out.println(request.getParameter("userNo"));
-    return new ResponseEntity<>(null);
+   return new ResponseEntity<Map<String,Object>>(Map.of("insertCount", blogService.registerComment(request))  // 평소에는 serviceImpl 에서 하는 작업 -> controller 에서도 Map으로 실어서 전달 가능함
+                                                       , HttpStatus.OK);
+   
+   // return ResponseEntity.ok(Map.of("insertCount", blogService.registerComment(request))); 도 가능
   }
+  
+  @GetMapping(value="/comment/list.do", produces="application/json")
+  public ResponseEntity<Map<String, Object>> commentList(HttpServletRequest requset) {
+    return new ResponseEntity<>(blogService.getCommentList(requset)
+                              , HttpStatus.OK);
+  }
+  
+  @PostMapping(value="/comment/registerReply.do", produces="application/json")
+  public ResponseEntity<Map<String, Object>> registerReply(HttpServletRequest request) {
+    return ResponseEntity.ok(Map.of("insertReplyCount", blogService.registerReply(request)));
+  }
+  
+  
+  
 }

@@ -94,6 +94,7 @@ CREATE TABLE COMMENT_T (
   COMMENT_NO NUMBER              NOT NULL,
   CONTENTS   VARCHAR2(4000 BYTE) NOT NULL,
   CREATE_DT  TIMESTAMP,
+  STATE      NUMBER,  -- 0:삭제, 1:정상 (삽입기능수정 / 관련Dto및resultMap 수정)
   DEPTH      NUMBER,  -- 원글0, 답글1
   GROUP_NO   NUMBER,  -- 원글에 달린 모든 답글은 동일한 GROUP_NO 를 가짐
   USER_NO    NUMBER,  -- 외래키의 제약조건은 NULL 인 것이 편함, 나중에 추가하면 되는 사항이기 때문

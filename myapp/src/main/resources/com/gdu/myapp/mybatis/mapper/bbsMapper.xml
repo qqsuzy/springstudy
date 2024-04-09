@@ -97,7 +97,7 @@
  </update>
  
  <!-- 답글 삽입 -->
- <insert id="insertReplay"
+ <insert id="insertReply"
          parameterType="BbsDto"> <!-- BbsDto 는 답글을 의미함 -->
    INSERT INTO BBS_T (
       BBS_NO

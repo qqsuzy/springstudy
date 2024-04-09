@@ -100,7 +100,7 @@ public class MyPageUtils {
     
   }
   
- // ajax 용 (비동기 작업)
+ // ajax 용 (비동기 작업) -> 페이지 이동 x (위에 getPaging는 페이지를 이동함)
    public String getAsyncPaging() {
      
      StringBuilder builder = new StringBuilder();
@@ -109,7 +109,7 @@ public class MyPageUtils {
      if(beginPage == 1) {                     // 시작페이지가 1일 때, href 적용 x
        builder.append("<a>&lt;</a>");
      } else {
-       builder.append("<a href=\"javascript:fnPaging(" + (beginPage - 1) + ")\">&lt;</a>");
+       builder.append("<a href=\"javascript:fnPaging(" + (beginPage - 1) + ")\">&lt;</a>");  // 페이지 이동 x , javaScript 함수 호출
      }
      
      // 1 2 3 4 5 6 7 8 9 10

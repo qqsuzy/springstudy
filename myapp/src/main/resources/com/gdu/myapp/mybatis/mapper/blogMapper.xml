@@ -20,17 +20,33 @@
 <mapper namespace="com.gdu.myapp.mapper.BlogMapper"> 
  
  <!-- Dto 보고 만드는 resultMap, 어떠한 Dto 에 어떠한 데이터가 있는지 명시해주는 것 -->
+ <!-- PK : id (반드시 id로 줄 것), result : 나머지 칼럼 -->
  <resultMap type="BlogDto" id="BlogMap">
    <id property="blogNo" column="BLOG_NO" /> <!-- 테이블의 칼럼이름(column)과 그것을 저장할 Dto의 property 이름 -->
-   <id property="hit" column="HIT"/>
-   <id property="title" column="TITLE"/>
-   <id property="contents" column="CONTENTS"/>
-   <id property="createDt" column="CREATE_DT"/>
-   <id property="modifyDt" column="MODIFY_DT"/>
+   <result property="hit" column="HIT"/>
+   <result property="title" column="TITLE"/>
+   <result property="contents" column="CONTENTS"/>
+   <result property="createDt" column="CREATE_DT"/>
+   <result property="modifyDt" column="MODIFY_DT"/>
    <association property="user" javaType="UserDto"> <!-- blog 정보를 조회할 때, 필요한 user 정보 -->
      <id property="userNo" column="USER_NO"/>
      <result property="email" column="EMAIL"/>
    </association>
+ </resultMap>
+ 
+ <resultMap type="CommentDto" id="CommentMap">
+   <id property="commentNo" column="COMMENT_NO"/>
+   <result property="state" column="STATE"/>
+   <result property="depth" column="DEPTH"/>
+   <result property="groupNo" column="GROUP_NO"/>
+   <result property="blogNo" column="BLOG_NO"/>
+   <result property="contents" column="CONTENTS"/>
+   <result property="createDt" column="CREATE_DT"/>
+   <association property="user" javaType="UserDto">
+      <id property="userNo" column="USER_NO"/>
+      <result property="email" column="EMAIL"/>
+   </association>
+ 
  </resultMap>
  
  <insert id="insertBlog"
@@ -52,6 +68,15 @@
     )
  </insert>
  
+<update id="updateBlog"
+        parameterType="BlogDto">
+  UPDATE BLOG_T
+     SET TITLE = #{title}
+       , CONTENTS = #{contents}
+       , MODIFY_DT = CURRENT_TIMESTAMP
+   WHERE BLOG_NO = #{blogNo}
+</update>
+ 
  <!-- 블로그 개수 조회 -->
  <select id="getBlogCount"
          resultType="int">
@@ -59,19 +84,26 @@
      FROM BLOG_T  
  </select>
  
- <!-- 블로그 목록 조회
-  -->
- <select id="getBlogList"
-         parameterType="Map"
-         resultMap="BlogMap">
-   SELECT BLOG_NO, TITLE, CONTENTS, HIT, CREATE_DT, MODIFY_DT, USER_NO, EMAIL
-     FROM (SELECT ROW_NUMBER() OVER(ORDER BY B.BLOG_NO DESC) AS RN
-                , B.BLOG_NO, B.TITLE, B.CONTENTS, B.HIT, B.CREATE_DT, B.MODIFY_DT
-                , U.USER_NO, U.EMAIL
-             FROM USER_T U INNER JOIN BLOG_T B
-               ON U.USER_NO = B.USER_NO)
-   WHERE RN BETWEEN #{begin} AND #{end}               
- </select>
+   <!-- 블로그 목록 조회
+    -->
+   <select id="getBlogList"
+           parameterType="Map"
+           resultMap="BlogMap">
+     SELECT BLOG_NO, TITLE, CONTENTS, HIT, CREATE_DT, MODIFY_DT, USER_NO, EMAIL
+       FROM (SELECT ROW_NUMBER() OVER(ORDER BY B.BLOG_NO DESC) AS RN
+                  , B.BLOG_NO, B.TITLE, B.CONTENTS, B.HIT, B.CREATE_DT, B.MODIFY_DT
+                  , U.USER_NO, U.EMAIL
+               FROM USER_T U INNER JOIN BLOG_T B
+                 ON U.USER_NO = B.USER_NO)
+     WHERE RN BETWEEN #{begin} AND #{end}               
+   </select>
+   
+   <update id="updateHit">
+     UPDATE BLOG_T
+        SET HIT = HIT + 1
+      WHERE BLOG_NO = #{blogNo}
+   
+   </update>
  
    <select id="getBlogByNo"
           resultMap="BlogMap">
@@ -81,5 +113,74 @@
         ON U.USER_NO = B.USER_NO
      WHERE B.BLOG_NO = #{blogNo}
   </select>
+ 
+  <insert id="insertComment"
+          parameterType="CommentDto">
+  INSERT INTO COMMENT_T (
+      COMMENT_NO
+    , CONTENTS
+    , CREATE_DT
+    , STATE
+    , DEPTH
+    , GROUP_NO
+    , USER_NO
+    , BLOG_NO
+  ) VALUES (
+      COMMENT_SEQ.NEXTVAL
+    , #{contents}
+    , CURRENT_TIMESTAMP
+    , 1
+    , 0
+    , COMMENT_SEQ.CURRVAL
+    , #{user.userNo}  
+    , #{blogNo}
+  )
+  
+  </insert>
+ 
+  <select id="getCommentCount"
+          resultType="int">
+    SELECT COUNT(*)
+      FROM COMMENT_T
+     WHERE BLOG_NO = #{blogNo}
+  </select>
+  
+  <select id="getCommentList"
+          parameterType="Map"
+          resultMap="CommentMap">
+     SELECT COMMENT_NO, CONTENTS, CREATE_DT, STATE, DEPTH, GROUP_NO, BLOG_NO, USER_NO, EMAIL
+       FROM(SELECT ROW_NUMBER() OVER(ORDER BY C.GROUP_NO DESC, C.DEPTH ASC, C.COMMENT_NO DESC) AS RN 
+                 , C.COMMENT_NO, C.CONTENTS, C.CREATE_DT, C.DEPTH, C.GROUP_NO, C.BLOG_NO
+                 , U.USER_NO, U.EMAIL
+              FROM USER_T U INNER JOIN COMMENT_T C 
+                ON U.USER_NO = C.USER_NO
+              WHERE BLOG_NO = #{blogNo})
+      WHERE RN BETWEEN #{begin} AND #{end}
+             
+  </select>
+ 
+ <insert id="insertReply"
+         parameterType="CommentDto">
+    INSERT INTO COMMENT_T (
+        COMMENT_NO
+      , CONTENTS
+      , CREATE_DT
+      , STATE
+      , DEPTH
+      , GROUP_NO
+      , USER_NO
+      , BLOG_NO
+    ) VALUES (
+        COMMENT_SEQ.NEXTVAL
+      , #{contents}
+      , CURRENT_TIMESTAMP
+      , 1
+      , 1
+      , #{groupNo}
+      , #{user.userNo}
+      , #{blogNo}
+    )    
+ </insert> 
+
  
  </mapper>

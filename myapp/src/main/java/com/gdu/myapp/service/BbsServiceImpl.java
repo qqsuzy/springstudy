@@ -121,7 +121,7 @@ public class BbsServiceImpl implements BbsService {
                        .build();
     
     // 새 답글의 추가
-    return bbsMapper.insertReplay(reply);  // 새 답글 삽입 성공 : 1 , 실패 : 0
+    return bbsMapper.insertReply(reply);  // 새 답글 삽입 성공 : 1 , 실패 : 0
     
   }
   

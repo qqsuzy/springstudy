@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class CommentDto {
- private int commentNo, depth, groupNo, blogNo; // blogNo 는 blogDto로 가져올 필요는 없음 -> 블로그 댓글 내에는 상세보기가 필요 없기 때문에 blogNo만 가져옴
+ private int commentNo, state, depth, groupNo, blogNo; // blogNo 는 blogDto로 가져올 필요는 없음 -> 블로그 댓글 내에는 상세보기가 필요 없기 때문에 blogNo만 가져옴
  private String contents;
  private Timestamp createDt;
  private UserDto user;

@@ -53,7 +53,7 @@ const fnGetBlogList = () => {
     success: (resData) => {  // resData = {"blogList": [], "totalPage": 10}
     	totalPage = resData.totalPage;	
     	 $.each(resData.blogList, (i, blog) => {
-    	  let str = '<div class="blog" data-blog-no="' + blog.blogNo + '">';
+    	  let str = '<div class="blog" data-user-no="'+ blog.user.userNo +'"  data-blog-no="' + blog.blogNo + '">';
           str += '<span>' + blog.title + '</span>';
           str += '<span>' + blog.user.email + '</span>';
           str += '<span>' + blog.hit + '</span>';
@@ -115,13 +115,18 @@ const fnBlogDetail = () => {
 	$(document).on('click', '.blog', (evt) => {  // 나중에 javaScript 로 생긴 동적 요소들(이벤트 요소) 들은 이벤트 거는 방법이 다름! (옆에 코드와 같이)
 		// <div class="blog"> 중 클릭 이벤트가 발생한 <div> : 이벤트 대상 (evt.target)
 		// evt.target.dataset.blogNo === $(evt.target).data('blogNo')
+		// evt.target.datadet.userNo === $(evt.target).data('userNo')
 		
-		location.href = '${contextPath}/blog/detail.do?blogNo=' +  evt.target.dataset.blogNo;
+		// 내가 작성한 블로그는 /detail.do 요청 (조회수 증가가 없음)
+		// 남이 작성한 블로그는 /updateHit.do 요청 (조회수 증가가 있음)
+		if('${sessionScope.user.userNo}' === evt.target.dataset.userNo) {
+  		location.href = '${contextPath}/blog/detail.do?blogNo=' +  evt.target.dataset.blogNo;
+		} else{
+			location.href = '${contextPath}/blog/updateHit.do?blogNo=' +  evt.target.dataset.blogNo;
+		}
 		
 	})
 }
-
-
 
   const fnInsertCount = () => {
 	  let insertCount = '${insertCount}';

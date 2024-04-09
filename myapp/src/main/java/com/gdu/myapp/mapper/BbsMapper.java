@@ -13,7 +13,7 @@ public interface BbsMapper {
   int getBbsCount();
   List<BbsDto> getBbsList(Map<String, Object> map);
   int updateGroupOrder(BbsDto bbs);                      // 원글이 넘어감
-  int insertReplay(BbsDto reply);                        // 답글이 넘어감
+  int insertReply(BbsDto reply);                         // 답글이 넘어감
   int removeBbs(int bbsNo);
   int getSearchCount(Map<String, Object> map);           // 검색 결과 개수 반환
   List<BbsDto> getSearchList(Map<String, Object> map);   // 검색 결과 목록 반환
