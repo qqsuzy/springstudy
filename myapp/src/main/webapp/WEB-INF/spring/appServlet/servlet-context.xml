@@ -32,6 +32,7 @@
     <interceptor>
       <mapping path="/bbs/write.page" />
       <mapping path="/blog/write.page" />
+      <mapping path="/upload/write.page" />
       <beans:bean class="com.gdu.myapp.interceptor.RequiredSigninInterceptor" /> <!-- <beans:bean> : servlet-context에서 bean 만드는 방법 -->
     </interceptor>
     

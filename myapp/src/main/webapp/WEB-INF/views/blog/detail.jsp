@@ -36,13 +36,12 @@
 </div>
 
 <div>
- <c:if test="${session.user.userNo == blog.user.userNo}">
-   <input type="hidden"  name="blogNo" name="${blog.blogNo}">
-   <button type="button" class="btn-blog-modify">수정</button>
- </c:if>
- <c:if test="${session.user.userNo == blog.user.userNo}">
-   <input type="hidden"  name="blogNo" name="${blog.blogNo}">
-   <button type="button" class="btn-blog-remove">삭제</button>
+ <c:if test="${sessionScope.user.userNo == blog.user.userNo}">
+   <form id="frm-btn" method="POST">  
+      <input type="hidden" name="blogNo" value="${blog.blogNo}">
+      <button type="button" id="btn-edit" class="btn btn-warning btn-sm">편집</button>
+      <button type="button" id="btn-remove" class="btn btn-danger btn-sm">삭제</button>
+    </form>
  </c:if>
 </div>
   
@@ -209,25 +208,31 @@ const fnRegisterReply = () => {
   })
 }
 
-const fnModifyBlog = () => {
-	$('#btn-blog-modify').on('click', (evt) => {
-		// 로그인 체크
-		fnCheckSignin();
-		// 요청
-		$.ajax({
-			type: 'POST',
-			url: '${contextPat}/blog/register.do',
-			data: 'blogNo=${blog.blogNo}',
-			dataType: 'json'
-		})
-	})
+//전역 객체
+var frmBtn = $('#frm-btn');
+
+const fnEditBlog = () => {
+  $('#btn-edit').on('click', (evt) => {
+    frmBtn.attr('action', '${contextPath}/blog/edit.do');
+    frmBtn.submit();
+  })
+}
+
+const fnRemoveBlog = () => {
+  $('#btn-remove').on('click', (evt) => {
+    if(confirm('블로그를 삭제하면 모든 댓글이 함께 삭제됩니다. 삭제할까요?')){
+      frmBtn.attr('action', '${contextPath}/blog/remove.do');
+      frmBtn.submit();
+    }
+  })
 }
 
 $('#contents').on('click', fnCheckSignin); // 로그인이 안되어 있으면 입력(textarea)을 막음
 fnRegisterComment();
 fnCommentList();
 fnRegisterReply();
-fnModifyBlog();
+fnEditBlog();
+fnRemoveBlog();
 	
 </script>
 

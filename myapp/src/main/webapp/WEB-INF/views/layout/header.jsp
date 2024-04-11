@@ -65,7 +65,7 @@
       <ul class="gnb">
         <li><a href="${contextPath}/bbs/list.do">계층형게시판</a></li>
         <li><a href="${contextPath}/blog/list.page">댓글형게시판</a></li>
-        <li><a href="${contextPath}/">첨부형게시판</a></li>
+        <li><a href="${contextPath}/upload/list.do">첨부형게시판</a></li>
       </ul>
     </div>
     <!-- 
@@ -89,7 +89,6 @@
       동일한 세션유지 : 브라우저 닫을 때 까지
      
      -->
-    <div>현재 sessionId : <%=session.getId()%></div>
     
   </div>
   <!-- 닫는 태그 없이 작업 --> 

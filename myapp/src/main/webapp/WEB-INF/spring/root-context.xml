@@ -11,8 +11,8 @@
 	
 	<!-- Root Context: defines shared resources visible to all other web components -->
   
-     <!-- 파일 업로드를 위한 CommonsMultipartResolver bean 등록 -->
-  <!-- bean 이름은 반드시 multipartResolver 여야 한다. -->
+  <!-- 파일 업로드를 위한 CommonsMultipartResolver bean 등록 -->
+  <!-- bean 이름(id)은 반드시 multipartResolver 여야 함 => 인터페이스 기반으로 이름을 찾게끔 되어있기 때문에 spring에서 찾을 수 있도록 지정된 이름을 써야함 (우리가 불러서 사용할 때는 상관 없으나 리졸버는 스프링에서 불러서 사용됨) -->
   <!-- multipart 파일 담당 (bean으로 등록만 시켜주면 spring이 알아서 인코딩, 파일크기 등을 확인함) -->
   <bean id="multipartResolver"
         class="org.springframework.web.multipart.commons.CommonsMultipartResolver"

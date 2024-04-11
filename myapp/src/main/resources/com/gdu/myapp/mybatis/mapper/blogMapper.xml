@@ -68,15 +68,6 @@
     )
  </insert>
  
-<update id="updateBlog"
-        parameterType="BlogDto">
-  UPDATE BLOG_T
-     SET TITLE = #{title}
-       , CONTENTS = #{contents}
-       , MODIFY_DT = CURRENT_TIMESTAMP
-   WHERE BLOG_NO = #{blogNo}
-</update>
- 
  <!-- 블로그 개수 조회 -->
  <select id="getBlogCount"
          resultType="int">
@@ -182,5 +173,15 @@
     )    
  </insert> 
 
+ 
+<update id="updateBlog"
+        parameterType="BlogDto">
+  UPDATE BLOG_T
+     SET TITLE = #{title}
+       , CONTENTS = #{contents}
+       , MODIFY_DT = CURRENT_TIMESTAMP
+   WHERE BLOG_NO = #{blogNo}
+</update>
+ 
  
  </mapper>
