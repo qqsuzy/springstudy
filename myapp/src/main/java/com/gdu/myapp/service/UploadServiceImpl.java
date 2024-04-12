@@ -1,18 +1,28 @@
 package com.gdu.myapp.service;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.MultipartRequest;
 
 import com.gdu.myapp.dto.AttachDto;
 import com.gdu.myapp.dto.UploadDto;
@@ -200,7 +210,165 @@ public class UploadServiceImpl implements UploadService {
   @Override
   public void loadUploadByNo(int uploadNo, Model model) {
     model.addAttribute("upload", uploadMapper.getUploadByNo(uploadNo));
+    model.addAttribute("attachList", uploadMapper.getAttachList(uploadNo));
+  }
+
+  @Override
+  public ResponseEntity<Resource> download(HttpServletRequest request) {
+    
+    // 첨부 파일 정보를 DB 에서 가져오기 => 정보는 getAttachByNo 에 있음 (SELECT 함)
+    int attachNo = Integer.parseInt(request.getParameter("attachNo"));
+    AttachDto attach = uploadMapper.getAttachByNo(attachNo);
+    
+    // 첨부 파일 정보를 File 객체로 만든 뒤 Resource 객체로 만들기
+    File file = new File(attach.getUploadPath(), attach.getFilesystemName());  // (경로, 파일명)
+    Resource resource = new FileSystemResource(file);
+    
+    // 첨부 파일이 없으면 다운로드 취소
+    if(!resource.exists()) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
+    }
+    
+    // DOWNLOAD_COUNT 증가
+    uploadMapper.updateDownloadCount(attachNo);
+    
+    // 사용자가 다운로드 받을 파일명 결정 (originalFilename 을 브라우저에 따라 다르게 인코딩 처리)
+    String originalFilename = attach.getOriginalFilename();
+    String userAgent = request.getHeader("user-Agent");     // 유저 접속 경로는 Header에 들어 있음
+    
+    try {
+      
+      // IE (Internet Explore)
+      if(userAgent.contains("Trident")) {
+        originalFilename = URLEncoder.encode(originalFilename, "UTF-8").replace("+", "");  // Trident 의 문제점은 공백을 + 로 출력함 -> 역으로 + 가 나오면 공백으로 replace 함 
+      }
+      // Edge
+      else if(userAgent.contains("Edg")) {
+        originalFilename = URLEncoder.encode(originalFilename, "UTF-8");
+      }
+      // Other 
+      else {
+        originalFilename = new String(originalFilename.getBytes("UTF-8"), "ISO-8859-1");  // String charset 함께 지정
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    // 다운로드용 응답 헤더 설정 (HTTP 참조)
+    HttpHeaders responseHeader = new HttpHeaders();
+    responseHeader.add("Content-Type", "application/octet-stream");                         // contentType 지정
+    responseHeader.add("Content-Disposition", "attachment; filename=" + originalFilename);  // Content-Disposition : 다운로드 받은 파일이름 지정
+    responseHeader.add("Content-Length", file.length() + "");                               // Content-Length      : 전송되는 콘텐츠의 길이 => add 메소드의 반환타입은 무조건 string 이어야 함, file.length의 반환 타입은 long 으로 문자열 반환을 위해서 빈문자열 더함 
+    
+    // 다운로드 진행
+    return new ResponseEntity<Resource>(resource, responseHeader, HttpStatus.OK);
+    
   }
   
+  @Override
+  public ResponseEntity<Resource> downloadAll(HttpServletRequest request) {
+    
+    /*
+     * 임시 파일이름은 currentTimeMillis 씀 -> 숫자형태로 파일이름이 저장됨 -> 인코딩 필요 x
+     */
+    
+    // 다운로드 할 모든 첨부 파일들의 정보를 DB 에서 가져오기
+    int uploadNo = Integer.parseInt(request.getParameter("uploadNo"));
+    List<AttachDto> attachList = uploadMapper.getAttachList(uploadNo);
+    
+    // 첨부 파일이 없으면 종료
+    if(attachList.isEmpty()) {
+      return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
+    }
+    
+    // 임시 zip 파일 저장할 경로 
+    File tempDir = new File(myFileUtils.getTempPath());
+    if(!tempDir.exists()) {
+      tempDir.mkdirs();
+    }
+    
+    // 임시 zip 파일 이름
+    String tempFilename = myFileUtils.getTempFilename() + ".zip";
+    
+    // 임시 zip 파일 File 객체
+    File tempFile = new File(tempDir, tempFilename);
+    
+    // 첨부 파일들을 하나씩 zip 파일로 모으기
+    try {
+      
+      // ZipOutPutStream 객체 생성
+      ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(tempFile));
+
+      for(AttachDto attach : attachList) {   // 첨부된 파일의 개수 만큼 for문 수행
+        
+        // zip 파일에 포함할 ZipEntry 생성
+        ZipEntry zipEntry = new ZipEntry(attach.getOriginalFilename());  // zip 파일에 들어갈 개별 이름 (보통 파일이 업로드된 이름 그대로 다운로드 되기 때문에 originalFilename 으로 저장
+        
+        // zip 파일에 ZipEntry 객체 명단 추가 (파일의 이름만 등록한 상황)
+        zout.putNextEntry(zipEntry);
+        
+        // 실제 첨부 파일을 zip 파일에 등록 (첨부 파일을 읽어서 zip 파일로 보냄) => 파일을 읽어들일 수 있도록 FileInputStream 사용
+        BufferedInputStream in = new BufferedInputStream(new FileInputStream(new File(attach.getUploadPath(), attach.getFilesystemName()))); 
+        zout.write(in.readAllBytes());
+        
+        // 사용한 자원 정리
+        in.close();
+        zout.closeEntry();   // zipEntry 정리는 zout에서 함
+      
+        // DOWNLOAD_COUNT 증가
+        uploadMapper.updateDownloadCount(attach.getAttachNo());
+        
+      } // for 
+      
+      // zout 자원 반납
+      zout.close();
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    // 다운로드 할 zip File 객체 
+    Resource resource = new FileSystemResource(tempFile);
+    
+    // 다운로드용 응답 헤더 설정 (HTTP 참조)
+    HttpHeaders responseHeader = new HttpHeaders();
+    responseHeader.add("Content-Type", "application/octet-stream");                     // contentType 지정
+    responseHeader.add("Content-Disposition", "attachment; filename=" + tempFilename);  // 다운로드 받은 파일이름 지정
+    responseHeader.add("Content-Length", tempFile.length() + ""); // Content-Length : 전송되는 콘텐츠의 길이 => add 메소드의 반환타입은 무조건 string 이어야 함, file.length의 반환 타입은 long 으로 문자열 반환을 위해서 빈문자열 더함 
+    
+    // 다운로드 진행
+    return new ResponseEntity<Resource>(resource, responseHeader, HttpStatus.OK);
+    
+  }
+
+  @Override
+  public void removeTempFiles() {
+    
+ // 임시 zip 파일 저장할 경로 
+    File tempDir = new File(myFileUtils.getTempPath());
+    File[] tempFiles = tempDir.listFiles();             // listFiles() : 디렉터리 내의 모든 File 객체를 File[] 배열로 반환
+    
+    // 임시 폴더의 모든 파일 제거
+    if(tempFiles != null) {
+      for(File tempFile : tempFiles) {
+        tempFile.delete();
+      }
+    }
+  }
+
+  @Override
+  public UploadDto getUploadByNo(int uploadNo) {
+    return uploadMapper.getUploadByNo(uploadNo);
+  }
+  
+  @Override
+  public int modifyUpload(UploadDto upload) {
+    return uploadMapper.updateUpload(upload);
+  }
+
+  @Override
+  public ResponseEntity<Map<String, Object>> getAttachList(int uploadNo) {
+    return ResponseEntity.ok(Map.of("attachList", uploadMapper.getAttachList(uploadNo)));
+  }
   
 }

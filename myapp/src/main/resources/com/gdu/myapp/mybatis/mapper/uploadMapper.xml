@@ -116,4 +116,36 @@
    WHERE UP.UPLOAD_NO = #{uploadNo}
  </select>
  
+ <!-- 첨부목록 결과 조회(반환) -->
+ <select id="getAttachList"
+         resultType="AttachDto">
+   SELECT ATTACH_NO, UPLOAD_PATH, FILESYSTEM_NAME, ORIGINAL_FILENAME, DOWNLOAD_COUNT, HAS_THUMBNAIL
+     FROM ATTACH_T
+    WHERE UPLOAD_NO = #{uploadNo}
+ </select>
+ 
+ <!-- 화면단에서 attach_no 가 넘어오는데 해당 번호에 맞는 정보들을 함께 넘겨줄 수 있도록 mapper 에서 SELECT 필요함 -->
+ <select id="getAttachByNo"
+         resultType="AttachDto">
+   SELECT ATTACH_NO, UPLOAD_PATH, FILESYSTEM_NAME, ORIGINAL_FILENAME, DOWNLOAD_COUNT, HAS_THUMBNAIL
+     FROM ATTACH_T
+    WHERE ATTACH_NO = #{attachNo}
+ </select>
+  
+  <update id="updateDownloadCount">
+    UPDATE ATTACH_T
+       SET DOWNLOAD_COUNT = DOWNLOAD_COUNT + 1
+     WHERE ATTACH_NO = #{attachNo}
+  </update>
+  
+  <update id="updateUpload"
+          parameterType="UploadDto">
+    UPDATE UPLOAD_T
+       SET TITLE = #{title}
+         , CONTENTS = #{contents}
+         , MODIFY_DT = TO_CHAR(CURRENT_DATE, 'YYYY-MM-DD HH24:MI:SS')
+     WHERE UPLOAD_NO = #{uploadNo}
+  </update>
+  
+ 
  </mapper>

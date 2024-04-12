@@ -21,7 +21,7 @@ public class ContactScheduler {
   }
   
   /*
-   * 크론식            => http://www.cronmaker.com/ 에서 크론식 생성 가능
+   * 크론식            => http://www.cronmaker.com/ 에서 크론식 생성 가능 -> conron format 에서 마지막 * 빼고 6개의 데이터만 필요함
    * 
    * 1. 형식
    *    초 분 시 일 월 요일
